@@ -14,6 +14,10 @@ config/name="Ascend"
 run/main_scene="res://Node2D.tscn"
 config/icon="res://icon.png"
 
+[global]
+
+textures=false
+
 [gui]
 
 common/drop_mouse_on_gui_input_disabled=true
