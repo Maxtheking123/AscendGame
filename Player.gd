@@ -2,7 +2,7 @@ extends KinematicBody2D
 
 # Configurable properties
 var gravity = 1500
-var walkSpeed = 200
+var runSpeed = 300
 var jumpForce = 500
 var wallSlideSpeed = 200
 var defaultWallSlideFriction = 0.1
@@ -40,7 +40,7 @@ func _physics_process(delta):
 
 	handle_horizontal_movement()
 	handle_jump(isOnFloor, isOnWall)
-
+	
 	move_and_slide(playerVelocity, Vector2.UP)
 	update_animation(isOnFloor, isOnWall, isSliding)
 
@@ -68,16 +68,16 @@ func handle_fall(delta):
 	isSliding = false
 
 func handle_ground():
-	playerVelocity.y = 0
+	playerVelocity.y = 5
 	isSliding = false
 	wallJumpAvailable = true
 
 func handle_horizontal_movement():
 	if Input.is_action_pressed("ui_left"):
-		playerVelocity.x = -walkSpeed
+		playerVelocity.x = -runSpeed
 		animatedSprite.flip_h = true
 	elif Input.is_action_pressed("ui_right"):
-		playerVelocity.x = walkSpeed
+		playerVelocity.x = runSpeed
 		animatedSprite.flip_h = false
 	else:
 		playerVelocity.x = 0
@@ -89,7 +89,7 @@ func handle_jump(isOnFloor: bool, isOnWall: bool):
 		elif isOnWall and wallJumpAvailable and wallJumpTimer <= 0 and wallJumpGraceTimer <= 0:
 			playerVelocity.y = -jumpForce
 			# Apply horizontal force away from the wall
-			playerVelocity.x = (walkSpeed * (1 if not animatedSprite.flip_h else -1)) * 1.5
+			playerVelocity.x = (runSpeed * (1 if not animatedSprite.flip_h else -1)) * 1.5
 			wallJumpAvailable = false
 			isSliding = false
 			wallJumpTimer = wallJumpCooldown
@@ -102,7 +102,7 @@ func update_animation(isOnFloor: bool, isOnWall: bool, isSliding: bool):
 	elif not isOnFloor:
 		anim = "fall"
 	elif playerVelocity.x != 0:
-		anim = "walk"
+		anim = "run"
 	if animatedSprite.animation != anim:
 		animatedSprite.stop()
 		animatedSprite.play(anim)
