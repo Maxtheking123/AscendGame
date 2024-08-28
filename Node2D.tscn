@@ -317,10 +317,10 @@ scale = Vector2( 1.29791, 1.29791 )
 texture = ExtResource( 38 )
 
 [node name="iceSpike" parent="Background" instance=ExtResource( 1 )]
-position = Vector2( -468, -118 )
+position = Vector2( -468, -78 )
 
 [node name="iceSpike2" parent="Background" instance=ExtResource( 1 )]
-position = Vector2( 350, -118 )
+position = Vector2( 350, -78 )
 rotation = 3.14159
 scale = Vector2( 1, -1 )
 
@@ -365,5 +365,10 @@ cell_size = Vector2( 16, 16 )
 format = 1
 tile_data = PoolIntArray( -196549, 4, 0, 1114168, 4, 0 )
 
-[node name="BasicPlatformIce#1" parent="." instance=ExtResource( 39 )]
-position = Vector2( -17, -605 )
+[node name="BasicPlatformIce#2" parent="." instance=ExtResource( 39 )]
+position = Vector2( -22, -233 )
+scale = Vector2( 1.75, 1 )
+
+[node name="BasicPlatformIce#3" parent="." instance=ExtResource( 39 )]
+position = Vector2( -22, -489 )
+scale = Vector2( 1.75, 1 )
