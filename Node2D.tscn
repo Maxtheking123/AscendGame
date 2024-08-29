@@ -1,4 +1,4 @@
-[gd_scene load_steps=43 format=2]
+[gd_scene load_steps=48 format=2]
 
 [ext_resource path="res://iceSpike.tscn" type="PackedScene" id=1]
 [ext_resource path="res://Assets/mp_character_animation_asset_pack_v1.0/Exported PNGs/Male/Character 1/Clothes 1/Character1M_1_jump_1.png" type="Texture" id=2]
@@ -17,7 +17,7 @@
 [ext_resource path="res://Assets/mp_character_animation_asset_pack_v1.0/Exported PNGs/Male/Character 1/Clothes 1/Character1M_1_run_6.png" type="Texture" id=15]
 [ext_resource path="res://Assets/mp_character_animation_asset_pack_v1.0/Exported PNGs/Male/Character 1/Clothes 1/Character1M_1_idle_0.png" type="Texture" id=16]
 [ext_resource path="res://Assets/mp_character_animation_asset_pack_v1.0/Exported PNGs/Male/Character 1/Clothes 1/Character1M_1_idle_6.png" type="Texture" id=17]
-[ext_resource path="res://Assets/mp_character_animation_asset_pack_v1.0/Exported PNGs/Male/Character 1/Clothes 1/Character1M_1_wall_slide_0.png" type="Texture" id=18]
+[ext_resource path="res://Assets/mp_character_animation_asset_pack_v1.0/Exported PNGs/Male/Character 1/Clothes 1/Character1M_1_slide_0.png" type="Texture" id=18]
 [ext_resource path="res://Assets/mp_character_animation_asset_pack_v1.0/Exported PNGs/Male/Character 1/Clothes 1/Character1M_1_walk_4.png" type="Texture" id=19]
 [ext_resource path="res://Assets/mp_character_animation_asset_pack_v1.0/Exported PNGs/Male/Character 1/Clothes 1/Character1M_1_walk_3.png" type="Texture" id=20]
 [ext_resource path="res://Assets/mp_character_animation_asset_pack_v1.0/Exported PNGs/Male/Character 1/Clothes 1/Character1M_1_walk_6.png" type="Texture" id=21]
@@ -40,9 +40,14 @@
 [ext_resource path="res://Assets/background/Gradient#1.png" type="Texture" id=38]
 [ext_resource path="res://BasicPlatformHitbox#1.tscn" type="PackedScene" id=39]
 [ext_resource path="res://IceMaterial.gd" type="Script" id=40]
+[ext_resource path="res://IceBlock.tscn" type="PackedScene" id=41]
+[ext_resource path="res://PassthroughIceBlock.tscn" type="PackedScene" id=42]
+[ext_resource path="res://Assets/Frame 1.png" type="Texture" id=43]
+[ext_resource path="res://Assets/icePlatform.png" type="Texture" id=44]
+[ext_resource path="res://Assets/mp_character_animation_asset_pack_v1.0/Exported PNGs/Male/Character 1/Clothes 1/Character1M_1_slide_1.png" type="Texture" id=45]
 
 [sub_resource type="RectangleShape2D" id=1]
-extents = Vector2( 10.1786, 15.875 )
+extents = Vector2( 9.99999, 15.875 )
 
 [sub_resource type="SpriteFrames" id=2]
 animations = [ {
@@ -71,10 +76,10 @@ animations = [ {
 "name": "run",
 "speed": 10.0
 }, {
-"frames": [ ExtResource( 18 ) ],
+"frames": [ ExtResource( 18 ), ExtResource( 45 ) ],
 "loop": true,
 "name": "slide",
-"speed": 5.0
+"speed": 4.0
 }, {
 "frames": [ ExtResource( 24 ), ExtResource( 26 ), ExtResource( 27 ), ExtResource( 20 ), ExtResource( 19 ), ExtResource( 36 ), ExtResource( 21 ), ExtResource( 23 ) ],
 "loop": true,
@@ -85,6 +90,11 @@ animations = [ {
 [node name="Node2D" type="Node2D"]
 position = Vector2( 501, -237 )
 
+[node name="Gradient#1" type="Sprite" parent="."]
+position = Vector2( -39, -9224 )
+scale = Vector2( 1.29791, 1.29791 )
+texture = ExtResource( 38 )
+
 [node name="BackgroundCircle9" type="Node2D" parent="."]
 position = Vector2( 36, 12 )
 script = ExtResource( 40 )
@@ -92,18 +102,9 @@ script = ExtResource( 40 )
 [node name="Background" type="StaticBody2D" parent="BackgroundCircle9"]
 script = ExtResource( 40 )
 
-[node name="Gradient#1" type="Sprite" parent="BackgroundCircle9/Background"]
-position = Vector2( -65, -9372 )
-scale = Vector2( 1.29791, 1.29791 )
-texture = ExtResource( 38 )
-
-[node name="BasicPlatformIce#3" parent="BackgroundCircle9/Background" instance=ExtResource( 39 )]
-position = Vector2( 222, -561 )
-scale = Vector2( 1.3, 1.3 )
-
-[node name="BasicPlatformIce#7" parent="BackgroundCircle9/Background" instance=ExtResource( 39 )]
-position = Vector2( -360, -263 )
-scale = Vector2( 1.3, 1.3 )
+[node name="IceBlock7" parent="BackgroundCircle9/Background" instance=ExtResource( 41 )]
+position = Vector2( -922, -2185 )
+script = ExtResource( 40 )
 
 [node name="iceSpike2" parent="BackgroundCircle9/Background" instance=ExtResource( 1 )]
 position = Vector2( 350, -78 )
@@ -118,20 +119,121 @@ offset = Vector2( 0, 220 )
 
 [node name="Sprite" type="Sprite" parent="BackgroundCircle9/Background"]
 
+[node name="middleCircle9" type="Node" parent="BackgroundCircle9/Background"]
+
+[node name="IcePlatform" type="Sprite" parent="BackgroundCircle9/Background/middleCircle9"]
+position = Vector2( 909.616, -2183.2 )
+rotation = -0.785398
+scale = Vector2( 1.29791, 1.29791 )
+texture = ExtResource( 44 )
+
+[node name="IcePlatform2" type="Sprite" parent="BackgroundCircle9/Background/middleCircle9"]
+position = Vector2( 1129.62, -2403.2 )
+rotation = -0.785398
+scale = Vector2( 1.29791, 1.29791 )
+texture = ExtResource( 44 )
+
+[node name="IcePlatform3" type="Sprite" parent="BackgroundCircle9/Background/middleCircle9"]
+position = Vector2( 1372.62, -2504.2 )
+scale = Vector2( 1.29791, 1.29791 )
+texture = ExtResource( 44 )
+
+[node name="BasicPlatformIce#12" parent="BackgroundCircle9/Background/middleCircle9" instance=ExtResource( 39 )]
+position = Vector2( -281, -2123 )
+scale = Vector2( 1.3, 1.3 )
+
+[node name="BasicPlatformIce#13" parent="BackgroundCircle9/Background/middleCircle9" instance=ExtResource( 39 )]
+position = Vector2( -281, -2063 )
+rotation = -3.14159
+scale = Vector2( 1.3, 1.3 )
+
+[node name="BasicPlatformIce#11" parent="BackgroundCircle9/Background/middleCircle9" instance=ExtResource( 39 )]
+position = Vector2( 1242, -2063 )
+rotation = -3.14159
+scale = Vector2( 1.3, 1.3 )
+
+[node name="Frame1" type="Sprite" parent="BackgroundCircle9/Background/middleCircle9"]
+position = Vector2( 1083.25, -2268.17 )
+rotation = -0.785398
+scale = Vector2( 1.8025, 0.261703 )
+texture = ExtResource( 43 )
+
+[node name="Frame2" type="Sprite" parent="BackgroundCircle9/Background/middleCircle9"]
+position = Vector2( 1187.11, -2262.11 )
+rotation = -0.785398
+scale = Vector2( 1.79447, 0.261703 )
+texture = ExtResource( 43 )
+
+[node name="Frame3" type="Sprite" parent="BackgroundCircle9/Background/middleCircle9"]
+position = Vector2( 1387, -2183 )
+scale = Vector2( 2.05096, 0.60828 )
+texture = ExtResource( 43 )
+
+[node name="Frame4" type="Sprite" parent="BackgroundCircle9/Background/middleCircle9"]
+position = Vector2( 1450.75, -2378.75 )
+scale = Vector2( 1.31369, 0.670382 )
+texture = ExtResource( 43 )
+
+[node name="BasicPlatformIce#9" parent="BackgroundCircle9/Background/middleCircle9" instance=ExtResource( 39 )]
+position = Vector2( 29, -2123 )
+scale = Vector2( 1.3, 1.3 )
+
+[node name="BasicPlatformIce#14" parent="BackgroundCircle9/Background/middleCircle9" instance=ExtResource( 39 )]
+position = Vector2( 933, -2063 )
+rotation = -3.14159
+scale = Vector2( 1.3, 1.3 )
+
+[node name="BasicPlatformIce#15" parent="BackgroundCircle9/Background/middleCircle9" instance=ExtResource( 39 )]
+position = Vector2( 29, -2063 )
+rotation = -3.14159
+scale = Vector2( 1.3, 1.3 )
+
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="BackgroundCircle9/Background"]
-polygon = PoolVector2Array( 365, 53, 366, -734, 371, -739, 836, -739, 838, -2353, 1182, -2353, 1183, 647, -1309, 645, -1309, -2359, -952, -2360, -953, -1468, -895, -1476, -864, -1369, -835, -1362, -853, -1249, -921, -1242, -926, -1196, -953, -1192, -952, -738, -491, -739, -485, -733, -485, 53 )
+position = Vector2( 0, -1 )
+polygon = PoolVector2Array( 365, 53, 366, -734, 371, -739, 836, -739, 840, -1806, 238, -1806, 240, -1871, 680, -2314, 842, -2312, 838, -3472, 1182, -3469, 1183, 647, -1309, 645, -1309, -3494, -952, -3500, -953, -1468, -895, -1476, -864, -1369, -835, -1362, -853, -1249, -921, -1242, -926, -1196, -953, -1192, -952, -738, -491, -739, -485, -733, -485, 53 )
 
-[node name="BasicPlatformIce#4" parent="BackgroundCircle9/Background" instance=ExtResource( 39 )]
-position = Vector2( 192, -1032 )
+[node name="BasicPlatformIce#16" parent="BackgroundCircle9/Background" instance=ExtResource( 39 )]
+position = Vector2( -648, -2186 )
 scale = Vector2( 1.3, 1.3 )
 
-[node name="BasicPlatformIce#5" parent="BackgroundCircle9/Background" instance=ExtResource( 39 )]
-position = Vector2( 300, -1382 )
+[node name="BasicPlatformIce#17" parent="BackgroundCircle9/Background" instance=ExtResource( 39 )]
+position = Vector2( -612, -2466 )
 scale = Vector2( 1.3, 1.3 )
 
-[node name="BasicPlatformIce#6" parent="BackgroundCircle9/Background" instance=ExtResource( 39 )]
-position = Vector2( -456, -1382 )
+[node name="BasicPlatformIce#18" parent="BackgroundCircle9/Background" instance=ExtResource( 39 )]
+position = Vector2( -922, -2466 )
 scale = Vector2( 1.3, 1.3 )
+
+[node name="holeCircle9" type="Node" parent="BackgroundCircle9/Background"]
+
+[node name="BasicPlatformIce#8" parent="BackgroundCircle9/Background/holeCircle9" instance=ExtResource( 39 )]
+position = Vector2( 450, -786 )
+scale = Vector2( 1.3, 1.3 )
+
+[node name="BasicPlatformIce#4" parent="BackgroundCircle9/Background/holeCircle9" instance=ExtResource( 39 )]
+position = Vector2( 486, -488 )
+scale = Vector2( 1.3, 1.3 )
+
+[node name="BasicPlatformIce#3" parent="BackgroundCircle9/Background/holeCircle9" instance=ExtResource( 39 )]
+position = Vector2( 759, -786 )
+scale = Vector2( 1.3, 1.3 )
+
+[node name="BasicPlatformIce#7" parent="BackgroundCircle9/Background/holeCircle9" instance=ExtResource( 39 )]
+position = Vector2( 177, -488 )
+scale = Vector2( 1.3, 1.3 )
+
+[node name="wallJumpCircle9" type="Node" parent="BackgroundCircle9/Background"]
+
+[node name="BasicPlatformIce#6" parent="BackgroundCircle9/Background/wallJumpCircle9" instance=ExtResource( 39 )]
+position = Vector2( 81, -1607 )
+scale = Vector2( 1.3, 1.3 )
+
+[node name="BasicPlatformIce#7" parent="BackgroundCircle9/Background/wallJumpCircle9" instance=ExtResource( 39 )]
+position = Vector2( 197, -1257 )
+scale = Vector2( 1.3, 1.3 )
+
+[node name="WallIce#1" parent="BackgroundCircle9/Background/wallJumpCircle9" instance=ExtResource( 3 )]
+position = Vector2( 466, -1927 )
 
 [node name="Camera2D" type="Camera2D" parent="."]
 current = true
@@ -139,34 +241,40 @@ zoom = Vector2( 1.6, 1.6 )
 script = ExtResource( 29 )
 
 [node name="Player" type="KinematicBody2D" parent="."]
-position = Vector2( -595, -814 )
+position = Vector2( 751, -2414 )
 scale = Vector2( 2, 2 )
 script = ExtResource( 11 )
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Player"]
-position = Vector2( -0.75, -0.25 )
+position = Vector2( 3, -0.25 )
 scale = Vector2( 1.4, 2 )
 shape = SubResource( 1 )
 
 [node name="AnimatedSprite" type="AnimatedSprite" parent="Player"]
+position = Vector2( 3, -1.5 )
 scale = Vector2( 2, 2 )
 frames = SubResource( 2 )
-animation = "fall"
-frame = 1
+animation = "slide"
 playing = true
 script = ExtResource( 10 )
 
-[node name="BasicPlatformIce#6" parent="." instance=ExtResource( 39 )]
-position = Vector2( -51, -549 )
-scale = Vector2( 1.3, 1.3 )
+[node name="WallIce#2" parent="." instance=ExtResource( 3 )]
+position = Vector2( -968, -2982 )
 
-[node name="BasicPlatformIce#4" parent="." instance=ExtResource( 39 )]
-position = Vector2( -15, -251 )
-scale = Vector2( 1.3, 1.3 )
+[node name="WallIce#3" parent="." instance=ExtResource( 3 )]
+position = Vector2( -968, -3681 )
 
-[node name="BasicPlatformIce#7" parent="." instance=ExtResource( 39 )]
-position = Vector2( -304, -1020 )
-scale = Vector2( 1.3, 1.3 )
+[node name="WallIce#4" parent="." instance=ExtResource( 3 )]
+position = Vector2( 927, -2982 )
 
-[node name="WallIce#1" parent="." instance=ExtResource( 3 )]
-position = Vector2( -35, -1690 )
+[node name="WallIce#5" parent="." instance=ExtResource( 3 )]
+position = Vector2( 927, -3681 )
+
+[node name="PassthroughBlock" parent="." instance=ExtResource( 42 )]
+position = Vector2( -36, -2400 )
+
+[node name="PassthroughBlock2" parent="." instance=ExtResource( 42 )]
+position = Vector2( 314, -2375 )
+
+[node name="PassthroughBlock3" parent="." instance=ExtResource( 42 )]
+position = Vector2( 610, -2616 )

@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/Frozen-Pixel-Art-Environment-Assets-Pack6.jpg-c8d46bee512ba575f16be65233f93115.stex"
+path="res://.import/Frame 1.png-96b08c6dcd1f238b39dc3bb707218976.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/tilesets/Frozen-Pixel-Art-Environment-Assets-Pack6.jpg"
-dest_files=[ "res://.import/Frozen-Pixel-Art-Environment-Assets-Pack6.jpg-c8d46bee512ba575f16be65233f93115.stex" ]
+source_file="res://Assets/Frame 1.png"
+dest_files=[ "res://.import/Frame 1.png-96b08c6dcd1f238b39dc3bb707218976.stex" ]
 
 [params]
 
