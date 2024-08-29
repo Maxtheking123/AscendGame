@@ -4,3 +4,4 @@ extends Node2D
 func _init():
 	# Set metadata in the _init method
 	set_meta("wall_type", "ice")
+	set_meta("floor_type", "ice")	
