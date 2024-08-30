@@ -1,4 +1,4 @@
-[gd_scene load_steps=48 format=2]
+[gd_scene load_steps=49 format=2]
 
 [ext_resource path="res://iceSpike.tscn" type="PackedScene" id=1]
 [ext_resource path="res://Assets/mp_character_animation_asset_pack_v1.0/Exported PNGs/Male/Character 1/Clothes 1/Character1M_1_jump_1.png" type="Texture" id=2]
@@ -40,7 +40,7 @@
 [ext_resource path="res://Assets/background/Gradient#1.png" type="Texture" id=38]
 [ext_resource path="res://BasicPlatformHitbox#1.tscn" type="PackedScene" id=39]
 [ext_resource path="res://IceMaterial.gd" type="Script" id=40]
-[ext_resource path="res://IceBlock.tscn" type="PackedScene" id=41]
+[ext_resource path="res://Assets/Terrain Tileset.png" type="Texture" id=41]
 [ext_resource path="res://PassthroughIceBlock.tscn" type="PackedScene" id=42]
 [ext_resource path="res://Assets/Frame 1.png" type="Texture" id=43]
 [ext_resource path="res://Assets/icePlatform.png" type="Texture" id=44]
@@ -66,11 +66,6 @@ animations = [ {
 "name": "jump",
 "speed": 7.0
 }, {
-"frames": [ ExtResource( 30 ), ExtResource( 35 ) ],
-"loop": true,
-"name": "land",
-"speed": 3.0
-}, {
 "frames": [ ExtResource( 32 ), ExtResource( 31 ), ExtResource( 34 ), ExtResource( 25 ), ExtResource( 28 ), ExtResource( 22 ), ExtResource( 15 ), ExtResource( 33 ) ],
 "loop": true,
 "name": "run",
@@ -81,17 +76,25 @@ animations = [ {
 "name": "slide",
 "speed": 4.0
 }, {
+"frames": [ ExtResource( 30 ), ExtResource( 35 ) ],
+"loop": true,
+"name": "slipping",
+"speed": 3.0
+}, {
 "frames": [ ExtResource( 24 ), ExtResource( 26 ), ExtResource( 27 ), ExtResource( 20 ), ExtResource( 19 ), ExtResource( 36 ), ExtResource( 21 ), ExtResource( 23 ) ],
 "loop": true,
 "name": "walk",
 "speed": 7.0
 } ]
 
+[sub_resource type="RectangleShape2D" id=3]
+extents = Vector2( 7.5, 43.5 )
+
 [node name="Node2D" type="Node2D"]
 position = Vector2( 501, -237 )
 
 [node name="Gradient#1" type="Sprite" parent="."]
-position = Vector2( -39, -9224 )
+position = Vector2( -64, -9438 )
 scale = Vector2( 1.29791, 1.29791 )
 texture = ExtResource( 38 )
 
@@ -102,14 +105,19 @@ script = ExtResource( 40 )
 [node name="Background" type="StaticBody2D" parent="BackgroundCircle9"]
 script = ExtResource( 40 )
 
-[node name="IceBlock7" parent="BackgroundCircle9/Background" instance=ExtResource( 41 )]
-position = Vector2( -922, -2185 )
-script = ExtResource( 40 )
-
 [node name="iceSpike2" parent="BackgroundCircle9/Background" instance=ExtResource( 1 )]
 position = Vector2( 350, -78 )
 rotation = 3.14159
 scale = Vector2( 1, -1 )
+
+[node name="BasicPlatformIce#12" parent="BackgroundCircle9/Background" instance=ExtResource( 39 )]
+position = Vector2( -990, -1898 )
+scale = Vector2( 1.3, 1.3 )
+
+[node name="BasicPlatformIce#13" parent="BackgroundCircle9/Background" instance=ExtResource( 39 )]
+position = Vector2( -990, -1838 )
+rotation = -3.14159
+scale = Vector2( 1.3, 1.3 )
 
 [node name="BackgroundAscend#1" type="Sprite" parent="BackgroundCircle9/Background"]
 position = Vector2( -63, -9374 )
@@ -121,87 +129,123 @@ offset = Vector2( 0, 220 )
 
 [node name="middleCircle9" type="Node" parent="BackgroundCircle9/Background"]
 
-[node name="IcePlatform" type="Sprite" parent="BackgroundCircle9/Background/middleCircle9"]
+[node name="BasicPlatformIce#9" parent="BackgroundCircle9/Background/middleCircle9" instance=ExtResource( 39 )]
+position = Vector2( -143, -2123 )
+scale = Vector2( 1.3, 1.3 )
+
+[node name="BasicPlatformIce#15" parent="BackgroundCircle9/Background/middleCircle9" instance=ExtResource( 39 )]
+position = Vector2( -143, -2063 )
+rotation = -3.14159
+scale = Vector2( 1.3, 1.3 )
+
+[node name="Frame5" type="Sprite" parent="BackgroundCircle9/Background/middleCircle9"]
+position = Vector2( -362.903, -3056 )
+scale = Vector2( 1.06945, 0.594071 )
+texture = ExtResource( 43 )
+
+[node name="Frame7" type="Sprite" parent="BackgroundCircle9/Background/middleCircle9"]
+position = Vector2( -179, -3040 )
+scale = Vector2( 0.598726, 0.280253 )
+texture = ExtResource( 43 )
+
+[node name="Frame6" type="Sprite" parent="BackgroundCircle9/Background/middleCircle9"]
+position = Vector2( -422.952, -3125.87 )
+scale = Vector2( 0.700329, 0.529519 )
+texture = ExtResource( 43 )
+
+[node name="IcePlatform7" type="Sprite" parent="BackgroundCircle9/Background/middleCircle9"]
+position = Vector2( -122, -2986 )
+rotation = 3.14043
+scale = Vector2( 1.29791, 1.29791 )
+texture = ExtResource( 44 )
+
+[node name="IcePlatform4" type="Sprite" parent="BackgroundCircle9/Background/middleCircle9"]
+position = Vector2( -382.218, -3222.59 )
+rotation = 0.523599
+scale = Vector2( 1.29791, 1.29791 )
+texture = ExtResource( 44 )
+
+[node name="IcePlatform5" type="Sprite" parent="BackgroundCircle9/Background/middleCircle9"]
+position = Vector2( -118, -3068 )
+rotation = 0.523599
+scale = Vector2( 1.29791, 1.29791 )
+texture = ExtResource( 44 )
+
+[node name="IcePlatform6" type="Sprite" parent="BackgroundCircle9/Background/middleCircle9"]
+position = Vector2( -433, -2986 )
+rotation = -3.14275
+scale = Vector2( 1.29791, 1.29791 )
+texture = ExtResource( 44 )
+
+[node name="iceSlide" type="Node" parent="BackgroundCircle9/Background/middleCircle9"]
+
+[node name="IcePlatform" type="Sprite" parent="BackgroundCircle9/Background/middleCircle9/iceSlide"]
 position = Vector2( 909.616, -2183.2 )
 rotation = -0.785398
 scale = Vector2( 1.29791, 1.29791 )
 texture = ExtResource( 44 )
 
-[node name="IcePlatform2" type="Sprite" parent="BackgroundCircle9/Background/middleCircle9"]
+[node name="IcePlatform2" type="Sprite" parent="BackgroundCircle9/Background/middleCircle9/iceSlide"]
 position = Vector2( 1129.62, -2403.2 )
 rotation = -0.785398
 scale = Vector2( 1.29791, 1.29791 )
 texture = ExtResource( 44 )
 
-[node name="IcePlatform3" type="Sprite" parent="BackgroundCircle9/Background/middleCircle9"]
+[node name="IcePlatform3" type="Sprite" parent="BackgroundCircle9/Background/middleCircle9/iceSlide"]
 position = Vector2( 1372.62, -2504.2 )
 scale = Vector2( 1.29791, 1.29791 )
 texture = ExtResource( 44 )
 
-[node name="BasicPlatformIce#12" parent="BackgroundCircle9/Background/middleCircle9" instance=ExtResource( 39 )]
-position = Vector2( -281, -2123 )
-scale = Vector2( 1.3, 1.3 )
-
-[node name="BasicPlatformIce#13" parent="BackgroundCircle9/Background/middleCircle9" instance=ExtResource( 39 )]
-position = Vector2( -281, -2063 )
-rotation = -3.14159
-scale = Vector2( 1.3, 1.3 )
-
-[node name="BasicPlatformIce#11" parent="BackgroundCircle9/Background/middleCircle9" instance=ExtResource( 39 )]
+[node name="BasicPlatformIce#11" parent="BackgroundCircle9/Background/middleCircle9/iceSlide" instance=ExtResource( 39 )]
 position = Vector2( 1242, -2063 )
 rotation = -3.14159
 scale = Vector2( 1.3, 1.3 )
 
-[node name="Frame1" type="Sprite" parent="BackgroundCircle9/Background/middleCircle9"]
+[node name="Frame1" type="Sprite" parent="BackgroundCircle9/Background/middleCircle9/iceSlide"]
 position = Vector2( 1083.25, -2268.17 )
 rotation = -0.785398
 scale = Vector2( 1.8025, 0.261703 )
 texture = ExtResource( 43 )
 
-[node name="Frame2" type="Sprite" parent="BackgroundCircle9/Background/middleCircle9"]
+[node name="Frame2" type="Sprite" parent="BackgroundCircle9/Background/middleCircle9/iceSlide"]
 position = Vector2( 1187.11, -2262.11 )
 rotation = -0.785398
 scale = Vector2( 1.79447, 0.261703 )
 texture = ExtResource( 43 )
 
-[node name="Frame3" type="Sprite" parent="BackgroundCircle9/Background/middleCircle9"]
+[node name="Frame3" type="Sprite" parent="BackgroundCircle9/Background/middleCircle9/iceSlide"]
 position = Vector2( 1387, -2183 )
 scale = Vector2( 2.05096, 0.60828 )
 texture = ExtResource( 43 )
 
-[node name="Frame4" type="Sprite" parent="BackgroundCircle9/Background/middleCircle9"]
+[node name="Frame4" type="Sprite" parent="BackgroundCircle9/Background/middleCircle9/iceSlide"]
 position = Vector2( 1450.75, -2378.75 )
 scale = Vector2( 1.31369, 0.670382 )
 texture = ExtResource( 43 )
 
-[node name="BasicPlatformIce#9" parent="BackgroundCircle9/Background/middleCircle9" instance=ExtResource( 39 )]
-position = Vector2( 29, -2123 )
-scale = Vector2( 1.3, 1.3 )
-
-[node name="BasicPlatformIce#14" parent="BackgroundCircle9/Background/middleCircle9" instance=ExtResource( 39 )]
+[node name="BasicPlatformIce#14" parent="BackgroundCircle9/Background/middleCircle9/iceSlide" instance=ExtResource( 39 )]
 position = Vector2( 933, -2063 )
-rotation = -3.14159
-scale = Vector2( 1.3, 1.3 )
-
-[node name="BasicPlatformIce#15" parent="BackgroundCircle9/Background/middleCircle9" instance=ExtResource( 39 )]
-position = Vector2( 29, -2063 )
 rotation = -3.14159
 scale = Vector2( 1.3, 1.3 )
 
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="BackgroundCircle9/Background"]
 position = Vector2( 0, -1 )
-polygon = PoolVector2Array( 365, 53, 366, -734, 371, -739, 836, -739, 840, -1806, 238, -1806, 240, -1871, 680, -2314, 842, -2312, 838, -3472, 1182, -3469, 1183, 647, -1309, 645, -1309, -3494, -952, -3500, -953, -1468, -895, -1476, -864, -1369, -835, -1362, -853, -1249, -921, -1242, -926, -1196, -953, -1192, -952, -738, -491, -739, -485, -733, -485, 53 )
-
-[node name="BasicPlatformIce#16" parent="BackgroundCircle9/Background" instance=ExtResource( 39 )]
-position = Vector2( -648, -2186 )
-scale = Vector2( 1.3, 1.3 )
+polygon = PoolVector2Array( 365, 53, 366, -734, 371, -739, 836, -739, 840, -1806, 238, -1806, 240, -1871, 680, -2314, 842, -2312, 838, -3472, 1182, -3469, 1183, 647, -1309, 645, -1309, -3494, -952, -3500, -952.221, -3051.92, -500, -2791, -498, -2729, -952.38, -2727.94, -953, -1468, -895, -1476, -864, -1369, -835, -1362, -853, -1249, -921, -1242, -926, -1196, -953, -1192, -952, -738, -491, -739, -485, -733, -485, 53 )
 
 [node name="BasicPlatformIce#17" parent="BackgroundCircle9/Background" instance=ExtResource( 39 )]
-position = Vector2( -612, -2466 )
+position = Vector2( -660, -2466 )
 scale = Vector2( 1.3, 1.3 )
 
 [node name="BasicPlatformIce#18" parent="BackgroundCircle9/Background" instance=ExtResource( 39 )]
-position = Vector2( -922, -2466 )
+position = Vector2( -970, -2466 )
+scale = Vector2( 1.3, 1.3 )
+
+[node name="BasicPlatformIce#19" parent="BackgroundCircle9/Background" instance=ExtResource( 39 )]
+position = Vector2( -751, -2164 )
+scale = Vector2( 1.3, 1.3 )
+
+[node name="BasicPlatformIce#20" parent="BackgroundCircle9/Background" instance=ExtResource( 39 )]
+position = Vector2( -1061, -2164 )
 scale = Vector2( 1.3, 1.3 )
 
 [node name="holeCircle9" type="Node" parent="BackgroundCircle9/Background"]
@@ -241,7 +285,7 @@ zoom = Vector2( 1.6, 1.6 )
 script = ExtResource( 29 )
 
 [node name="Player" type="KinematicBody2D" parent="."]
-position = Vector2( 751, -2414 )
+position = Vector2( -46, -1831 )
 scale = Vector2( 2, 2 )
 script = ExtResource( 11 )
 
@@ -254,7 +298,8 @@ shape = SubResource( 1 )
 position = Vector2( 3, -1.5 )
 scale = Vector2( 2, 2 )
 frames = SubResource( 2 )
-animation = "slide"
+animation = "fall"
+frame = 1
 playing = true
 script = ExtResource( 10 )
 
@@ -271,10 +316,72 @@ position = Vector2( 927, -2982 )
 position = Vector2( 927, -3681 )
 
 [node name="PassthroughBlock" parent="." instance=ExtResource( 42 )]
-position = Vector2( -36, -2400 )
+position = Vector2( 29, -2454 )
 
 [node name="PassthroughBlock2" parent="." instance=ExtResource( 42 )]
-position = Vector2( 314, -2375 )
+position = Vector2( 435, -2335 )
 
 [node name="PassthroughBlock3" parent="." instance=ExtResource( 42 )]
 position = Vector2( 610, -2616 )
+
+[node name="PassthroughBlock4" parent="." instance=ExtResource( 42 )]
+position = Vector2( 234, -2742 )
+
+[node name="PassthroughBlock5" parent="." instance=ExtResource( 42 )]
+position = Vector2( -138, -2861 )
+
+[node name="PassthroughBlock6" parent="." instance=ExtResource( 42 )]
+position = Vector2( -477, -3039 )
+
+[node name="PassthroughBlock7" parent="." instance=ExtResource( 42 )]
+position = Vector2( -219, -3317 )
+
+[node name="PassthroughBlock8" parent="." instance=ExtResource( 42 )]
+position = Vector2( -734, -3287 )
+
+[node name="Area2D" type="Area2D" parent="."]
+position = Vector2( 42, -1951 )
+scale = Vector2( 3.99297, 3.99297 )
+
+[node name="TerrainTileset" type="Sprite" parent="Area2D"]
+position = Vector2( 0.5, -35 )
+texture = ExtResource( 41 )
+region_enabled = true
+region_rect = Rect2( 15.2885, 256.527, 15.8005, 14.9227 )
+
+[node name="TerrainTileset2" type="Sprite" parent="Area2D"]
+position = Vector2( 0.5, -20 )
+texture = ExtResource( 41 )
+region_enabled = true
+region_rect = Rect2( 15.2885, 256.527, 15.8005, 14.9227 )
+
+[node name="TerrainTileset3" type="Sprite" parent="Area2D"]
+position = Vector2( 0.5, -6 )
+texture = ExtResource( 41 )
+region_enabled = true
+region_rect = Rect2( 15.2885, 256.527, 15.8005, 14.9227 )
+
+[node name="TerrainTileset4" type="Sprite" parent="Area2D"]
+position = Vector2( 0.5, 8 )
+texture = ExtResource( 41 )
+region_enabled = true
+region_rect = Rect2( 15.2885, 256.527, 15.8005, 14.9227 )
+
+[node name="TerrainTileset5" type="Sprite" parent="Area2D"]
+position = Vector2( 0.5, 23 )
+texture = ExtResource( 41 )
+region_enabled = true
+region_rect = Rect2( 15.2885, 256.527, 15.8005, 14.9227 )
+
+[node name="TerrainTileset6" type="Sprite" parent="Area2D"]
+position = Vector2( 0.5, 38 )
+texture = ExtResource( 41 )
+region_enabled = true
+region_rect = Rect2( 15.2885, 256.527, 15.8005, 14.9227 )
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+position = Vector2( 0.5, 1.5 )
+shape = SubResource( 3 )
+
+[connection signal="area_entered" from="Area2D" to="Player" method="_on_Area2D_area_entered"]
+[connection signal="area_exited" from="Area2D" to="Player" method="_on_Area2D_area_exited"]
