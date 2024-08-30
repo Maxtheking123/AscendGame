@@ -3,6 +3,7 @@ extends KinematicBody2D
 # Configurable properties
 var gravity = 1000
 var minGravity = 600
+var defaultGravity = 1000
 var maxGravity = 2000
 var minSlippSpeed = 3
 var groundMaxDistance = 30
@@ -24,12 +25,12 @@ var leftButton = ""
 var playerVelocity = Vector2.ZERO
 var isSliding = false
 var isSlipping = false
-var on_ladder = false
-var is_climbing = false
 var isInAir = false
 var wallJumpAvailable = true
 var wallJumpTimer = 0.0
 var wallJumpGraceTimer = 0.0
+var onLadder = false
+var isClimbing = false
 var isJumping = false  # Track if the player is currently in a jump
 var jumpHoldTimer = 0.0  # Track how long the jump button has been held
 var canJump = true  # Used for jump state control
@@ -45,19 +46,10 @@ func _ready():
 func _physics_process(delta):
 	var isOnWall = is_on_wall()
 	var isOnFloor = is_on_floor()
-
-	if not on_ladder:
-		playerVelocity.y += gravity * delta
-	else:
-		gravity = 0  # No gravity while on the ladder
-		if not is_climbing:
-			playerVelocity.y = 0  # Stop falling when on a ladder but not climbing
-
 	if not isOnWall and not isOnFloor:
 		isInAir = true
 	else:
 		isInAir = false
-
 	var isHoldingWall = Input.is_action_pressed("ui_left") or Input.is_action_pressed("ui_right")
 	
 	if isOnWall and isHoldingWall and not isOnFloor and wallJumpGraceTimer <= 0:
@@ -70,17 +62,17 @@ func _physics_process(delta):
 
 	handle_horizontal_movement(isOnFloor, delta)
 	handle_jump(isOnFloor, isOnWall, delta)
-
+	
 	move_and_slide(playerVelocity, Vector2.UP)
-
+	
 	# Check for head collisions
 	for i in range(get_slide_count()):
 		var collision = get_slide_collision(i)
-		if collision.normal.y > 0:
-			playerVelocity.y = 0
-
+		if collision.normal.y > 0:  # Check if the collision is from above
+			playerVelocity.y = 0  # Reset vertical velocity
+	
 	update_animation(isOnFloor, isOnWall, isSliding)
-
+	
 	# Update timers
 	wallJumpTimer = max(wallJumpTimer - delta, 0)
 	wallJumpGraceTimer = max(wallJumpGraceTimer - delta, 0)
@@ -106,15 +98,6 @@ func handle_wall_slide(wallFriction, delta):
 		playerVelocity.y = playerVelocity.y/5
 	isSliding = true
 	playerVelocity.y = lerp(playerVelocity.y, wallFriction, delta)
-	print("Wall sliding with velocity: ", playerVelocity.y)  # Debugging
-
-func _on_Ladder_body_entered(body):
-	if body == self:
-		on_ladder = true
-
-func _on_Ladder_body_exited(body):
-	if body == self:
-		on_ladder = false
 
 func handle_fall(delta):
 	playerVelocity.y += gravity * delta
@@ -141,7 +124,6 @@ func handle_ground(delta):
 				playerVelocity.y = minSlippSpeed * slope_angle * groundFriction
 
 			isSlipping = true
-			print("Slipping with velocity: ", playerVelocity)  # Debugging
 		else:
 			isSlipping = false
 			playerVelocity.y = 5
@@ -153,17 +135,13 @@ func handle_ground(delta):
 
 func handle_horizontal_movement(isOnFloor: bool, delta: float):
 	if Input.is_action_pressed("ui_left"):
-		print("Pressing left, isSlipping: ", isSlipping)  # Debugging
 		if not isSlipping or (isSlipping and isInAir):
 			playerVelocity.x = -runSpeed
-			print("Moving left with velocity: ", playerVelocity.x)  # Debugging
 			
 		animatedSprite.flip_h = true
 	elif Input.is_action_pressed("ui_right"):
-		print("Pressing right, isSlipping: ", isSlipping)  # Debugging
 		if not isSlipping or (isSlipping and isInAir):
 			playerVelocity.x = runSpeed
-			print("Moving right with velocity: ", playerVelocity.x)  # Debugging
 			
 		animatedSprite.flip_h = false
 	elif isOnFloor:
@@ -173,19 +151,34 @@ func handle_horizontal_movement(isOnFloor: bool, delta: float):
 		playerVelocity.x = 0
 
 func handle_jump(isOnFloor: bool, isOnWall: bool, delta: float):
-	if on_ladder:
+	if onLadder:
+		gravity = 0  # Disable gravity while on the ladder
+		
 		if Input.is_action_pressed("ui_up"):
 			playerVelocity.y = -ladderClimbSpeed
-			is_climbing = true
+			isClimbing = true
+			update_ladder_animation()  # Update animation when moving on the ladder
 		elif Input.is_action_pressed("ui_down"):
 			playerVelocity.y = ladderClimbSpeed
-			is_climbing = true
+			isClimbing = true
+			update_ladder_animation()  # Update animation when moving on the ladder
 		else:
 			playerVelocity.y = 0
-			is_climbing = false
+			# Pause the climbing animation if not moving on the ladder
+			animatedSprite.stop()
 	else:
-		is_climbing = false
-		# Existing jump logic goes here
+		# If not on the ladder but still climbing, check for ladder exit condition
+		if isClimbing:
+			playerVelocity.y = 0
+			if not onLadder:
+				isClimbing = false
+				gravity = defaultGravity
+			else:
+				gravity = 0  # Disable gravity until the player is fully off the ladder
+		
+		if not isSlipping and not isJumping:
+			gravity = defaultGravity  # Reset gravity when not climbing
+		
 		if Input.is_action_just_pressed("ui_up"):
 			if not isSlipping:
 				if canJump:
@@ -193,27 +186,28 @@ func handle_jump(isOnFloor: bool, isOnWall: bool, delta: float):
 					isJumping = true
 					jumpHoldTimer = 0.0
 					playerVelocity.y = -jumpForce
-				if isOnWall:
-					if wallJumpAvailable:
-						playerVelocity.y = -wallJumpForce
-						playerVelocity.x = (runSpeed * (1 if not animatedSprite.flip_h else -1)) * 1.5
-						wallJumpAvailable = false
-						isSliding = false
-						wallJumpTimer = wallJumpCooldown
-						wallJumpGraceTimer = wallJumpGracePeriod
-		if isJumping:
-			if Input.is_action_pressed("ui_up") and jumpHoldTimer < maxJumpHoldTime:
-				jumpHoldTimer += delta
-				gravity = minGravity
-			elif Input.is_action_pressed("ui_down"):
-				gravity = maxGravity
-			else:
-				isJumping = false
-				gravity = 1000
+				if isOnWall and wallJumpAvailable:
+					playerVelocity.y = -wallJumpForce
+					playerVelocity.x = (runSpeed * (1 if not animatedSprite.flip_h else -1)) * 1.5
+					wallJumpAvailable = false
+					isSliding = false
+					wallJumpTimer = wallJumpCooldown
+					wallJumpGraceTimer = wallJumpGracePeriod
+					
+	if isJumping:
+		if Input.is_action_pressed("ui_up") and jumpHoldTimer < maxJumpHoldTime:
+			jumpHoldTimer += delta
+			gravity = minGravity
+		else:
+			isJumping = false
+			gravity = defaultGravity
+			
 
 func update_animation(isOnFloor: bool, isOnWall: bool, isSliding: bool):
 	var anim = "idle"
-	if isSliding:
+	if isClimbing:
+		anim = "climb"
+	elif isSliding:
 		anim = "slide"
 	elif not isOnFloor:
 		anim = "fall"
@@ -225,13 +219,39 @@ func update_animation(isOnFloor: bool, isOnWall: bool, isSliding: bool):
 		animatedSprite.stop()
 		animatedSprite.play(anim)
 
-
 func _on_Ladder_area_entered(area):
-	if area.name == "Ladder":
-		on_ladder = true
+	onLadder = true
+	isClimbing = true  # Start climbing when entering the ladder area
+	reset_jump_state()  # Reset jump and other states when landing on a ladder
 
 func _on_Ladder_area_exited(area):
-	if area.name == "Ladder":
-		on_ladder = false
-		is_climbing = false  # Stop climbing when leaving the ladder
+	onLadder = false
+	# Don't immediately stop climbing; let the logic in handle_jump control it
+	# Only reset climbing and gravity when the player is confirmed to be off the ladder
 
+func reset_jump_state():
+	# Reset jump-related states when landing on a ladder
+	isJumping = false
+	canJump = true  # Allow jumping again, as if the player landed on the ground
+	jumpHoldTimer = 0.0
+	wallJumpTimer = 0.0  # Reset wall jump timer, but do not reset wall jump availability
+
+	# Reset velocity and other states as necessary
+	playerVelocity.y = 0
+	wallJumpGraceTimer = 0.0  # Reset the wall jump grace period timer
+	isSliding = false
+	isSlipping = false
+
+	# Initialize climbing animation
+	update_ladder_animation()
+
+func update_ladder_animation():
+	if playerVelocity.y < 0:
+		if not animatedSprite.is_playing():
+			animatedSprite.play("climb")
+	elif playerVelocity.y > 0:
+		if not animatedSprite.is_playing():
+			animatedSprite.play("climb")
+	else:
+		# Not moving: pause the animation
+		animatedSprite.stop()

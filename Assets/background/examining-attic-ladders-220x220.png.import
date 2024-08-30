@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/Terrain Tileset.png-94af5df52554a3298b237131c961cead.stex"
+path="res://.import/examining-attic-ladders-220x220.png-cb7ac8dd699afeef75003752a0faab9e.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/Terrain Tileset.png"
-dest_files=[ "res://.import/Terrain Tileset.png-94af5df52554a3298b237131c961cead.stex" ]
+source_file="res://Assets/background/examining-attic-ladders-220x220.png"
+dest_files=[ "res://.import/examining-attic-ladders-220x220.png-cb7ac8dd699afeef75003752a0faab9e.stex" ]
 
 [params]
 
@@ -20,7 +20,7 @@ compress/hdr_mode=0
 compress/bptc_ldr=0
 compress/normal_map=0
 flags/repeat=0
-flags/filter=false
+flags/filter=true
 flags/mipmaps=false
 flags/anisotropic=false
 flags/srgb=2
