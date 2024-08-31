@@ -16,8 +16,8 @@ var defaultGroundFriction = 15
 var defaultWallSlideSpeed = 200
 var groundFrictionMap = {"ice": 2}
 var wallSlideSpeedMap = {"ice": 600}  # Dictionary to hold friction values for different wall types
-var respawnCoordinateMap = {"9": [0, 0], "8": [45, -3985]}
-var currentRespawn = "8"
+var respawnCoordinateMap = {"9": [0, 0], "8": [45, -3985], "7": [133, -7340]}
+var currentRespawn = "7"
 
 var leftButton = ""
 
@@ -32,15 +32,15 @@ var wallJumpTimer = 0.0
 var wallJumpGraceTimer = 0.0
 var wallJumpCooldown = 0.2  # Time in seconds before another wall jump can be performed
 var wallJumpGracePeriod = 0.7  # Time in seconds during which the player can't grab the wall after jumping
-var floatingPersonExitTimer = 0.0
-var floatingPersonCooldown = 0.5
+var FloatingThingExitTimer = 0.0
+var FloatingThingCooldown = 0.5
 var onLadder = false
 var isClimbing = false
 var isJumping = false  # Track if the player is currently in a jump
 var jumpHoldTimer = 0.0  # Track how long the jump button has been held
 var canJump = true  # Used for jump state control
 var distance = 0.0 # Used to track distance to ground
-var isOnFloatingPerson = false
+var isOnFloatingThing = false
 
 # Nodes
 onready var animatedSprite = $AnimatedSprite
@@ -56,18 +56,17 @@ func _ready():
 	# Any other initialization
 
 func _physics_process(delta):
-	if isOnFloatingPerson:
-		floatingPersonExitTimer += delta
-		if floatingPersonExitTimer > floatingPersonCooldown:
-			isOnFloatingPerson = false
+	if isOnFloatingThing:
+		FloatingThingExitTimer += delta
+		if FloatingThingExitTimer > FloatingThingCooldown:
+			isOnFloatingThing = false
 	else:
-		floatingPersonExitTimer = 0.0
+		FloatingThingExitTimer = 0.0
 		
 	if isDead:
 		handleDeath()
 		return
 
-	print(isOnFloatingPerson)
 		
 	# Debugging for finding checkpoints
 	# print("playerX: ", position.x, " playerY: ", position.y)
@@ -109,7 +108,6 @@ func _physics_process(delta):
 
 func handleDeath():
 	if isDead:  # Only move to the respawn point if the player is actually dead
-		print("respawning")
 		position = Vector2(respawnCoordinateMap[currentRespawn][0], respawnCoordinateMap[currentRespawn][1])
 		isDead = false  # Reset the death state
 	reset_variables()
@@ -121,14 +119,12 @@ func handle_horizontal_movement(isOnFloor: bool, delta: float):
 		return  # Prevent movement if the player is dead
 	
 	if Input.is_action_pressed("ui_left"):
-		print(onLadder)
 		if not isSlipping and not onLadder or (isSlipping and isInAir):
 			playerVelocity.x = -runSpeed
 			
 		# Makes sideways movement slower on ladders
 		elif onLadder:
 			playerVelocity.x = (-runSpeed) / 3
-			print((-runSpeed)/4, " vs ", (-runSpeed))
 			
 		animatedSprite.flip_h = true
 	elif Input.is_action_pressed("ui_right"):
@@ -230,7 +226,7 @@ func update_animation(isOnFloor: bool, isOnWall: bool, isSliding: bool):
 		anim = "climb"
 	elif isSliding:
 		anim = "slide"
-	elif isInAir and not isOnFloatingPerson:  # Use isInAir to detect when the player is falling
+	elif isInAir and not isOnFloatingThing:  # Use isInAir to detect when the player is falling
 		anim = "fall"
 	elif isSlipping:
 		anim = "slipping"
@@ -285,6 +281,7 @@ func handle_wall_slide(wallFriction, delta):
 func handle_fall(delta):
 	playerVelocity.y += gravity * delta
 	isSliding = false
+	canJump = false
 
 func handle_ground(delta):
 	var collision = get_slide_collision(0)
@@ -354,23 +351,24 @@ func update_ladder_animation():
 		# Not moving: pause the animation
 		animatedSprite.stop()
 
-func _on_Respawn_8_body_entered():
-	currentRespawn = "8"
-
-
-func _on_DeathTar_body_entered(body):
-	print(body.name)
+func _on_Respawn_body_entered(body, sender):
 	if(body.name == "Player"):
-		print("died")
+		# Check incase of triggering previous checkpoint
+		if(int(sender) < int(currentRespawn)):
+			currentRespawn = sender
+	
+
+func _kill_player_from_touching(body):
+	if(body.name == "Player"):
 		isDead = true
 		handleDeath()
-		
 
-func _on_tarPerson_entered(body):
+func _on_floating_thing_entered(body):
 	if body.name == "Player":
-		isOnFloatingPerson = true
-		floatingPersonExitTimer = 0.0  # Reset timer when entering
+		isOnFloatingThing = true
+		FloatingThingExitTimer = 0.0  # Reset timer when entering
 
-func _on_tarPerson_exited(body):
+func _on_floating_thing_exited(body):
 	if body.name == "Player":
-		floatingPersonExitTimer = floatingPersonCooldown  # Start timer for exit cooldown
+		FloatingThingExitTimer = FloatingThingCooldown  # Start timer for exit cooldown
+

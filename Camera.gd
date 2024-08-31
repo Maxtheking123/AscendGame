@@ -20,7 +20,3 @@ func _process(delta):
 		
 		# Moves into the target position
 		position.y = lerp(position.y, targetPositionY, camMovementSpeed)
-
-
-func _on_tarPerson_exited(body):
-	pass # Replace with function body.

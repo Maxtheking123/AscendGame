@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/tar_person_2.png-2af1df5d6dbee8cdea58ac874539b3be.stex"
+path="res://.import/deadTreePerson.png-d9d2b6b1ef946a6bc467ab4cb699ce37.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/tarPeople/tar_person_2.png"
-dest_files=[ "res://.import/tar_person_2.png-2af1df5d6dbee8cdea58ac874539b3be.stex" ]
+source_file="res://Assets/deadTreePerson.png"
+dest_files=[ "res://.import/deadTreePerson.png-d9d2b6b1ef946a6bc467ab4cb699ce37.stex" ]
 
 [params]
 
@@ -20,7 +20,7 @@ compress/hdr_mode=0
 compress/bptc_ldr=0
 compress/normal_map=0
 flags/repeat=0
-flags/filter=false
+flags/filter=true
 flags/mipmaps=false
 flags/anisotropic=false
 flags/srgb=2
