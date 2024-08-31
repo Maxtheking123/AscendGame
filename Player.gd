@@ -1,4 +1,5 @@
 extends KinematicBody2D
+
 # Configurable properties
 var gravity = 1000
 var minGravity = 600
@@ -31,17 +32,20 @@ var wallJumpTimer = 0.0
 var wallJumpGraceTimer = 0.0
 var wallJumpCooldown = 0.2  # Time in seconds before another wall jump can be performed
 var wallJumpGracePeriod = 0.7  # Time in seconds during which the player can't grab the wall after jumping
+var floatingPersonExitTimer = 0.0
+var floatingPersonCooldown = 0.5
 var onLadder = false
 var isClimbing = false
 var isJumping = false  # Track if the player is currently in a jump
 var jumpHoldTimer = 0.0  # Track how long the jump button has been held
 var canJump = true  # Used for jump state control
 var distance = 0.0 # Used to track distance to ground
+var isOnFloatingPerson = false
 
 # Nodes
 onready var animatedSprite = $AnimatedSprite
 onready var deathScreen = $"../Camera2D/deathScreen"
-
+onready var collisionShape = $CollisionShape2D  # Reference to CollisionShape2D node
 
 func _ready():
 	# Ensure the player doesn't move at the start of the game
@@ -52,18 +56,29 @@ func _ready():
 	# Any other initialization
 
 func _physics_process(delta):
+	if isOnFloatingPerson:
+		floatingPersonExitTimer += delta
+		if floatingPersonExitTimer > floatingPersonCooldown:
+			isOnFloatingPerson = false
+	else:
+		floatingPersonExitTimer = 0.0
+		
 	if isDead:
 		handleDeath()
 		return
+
+	print(isOnFloatingPerson)
 		
 	# Debugging for finding checkpoints
 	# print("playerX: ", position.x, " playerY: ", position.y)
 	var isOnWall = is_on_wall()
 	var isOnFloor = is_on_floor()
+
 	if not isOnWall and not isOnFloor:
 		isInAir = true
 	else:
 		isInAir = false
+
 	var isHoldingWall = Input.is_action_pressed("ui_left") or Input.is_action_pressed("ui_right")
 	
 	if isOnWall and isHoldingWall and not isOnFloor and wallJumpGraceTimer <= 0:
@@ -136,40 +151,46 @@ func handle_jump(isOnFloor: bool, isOnWall: bool, delta: float):
 		return  # Prevent jumping if the player is dead
 
 	if onLadder:
-		gravity = 0  # Disable gravity while on the ladder
-		
+		# Ladder-specific logic
+		gravity = 0  # Disable gravity while climbing
+
 		if Input.is_action_pressed("ui_up"):
 			playerVelocity.y = -ladderClimbSpeed
 			isClimbing = true
-			update_ladder_animation()  # Update animation when moving on the ladder
+			update_ladder_animation()  # Update animation for climbing up
 		elif Input.is_action_pressed("ui_down"):
 			playerVelocity.y = ladderClimbSpeed
 			isClimbing = true
-			update_ladder_animation()  # Update animation when moving on the ladder
+			update_ladder_animation()  # Update animation for climbing down
 		else:
 			playerVelocity.y = 0
-			# Pause the climbing animation if not moving on the ladder
+			# Pause climbing animation if not moving on the ladder
 			animatedSprite.stop()
-	else:
-		# If not on the ladder but still climbing, check for ladder exit condition
-		if isClimbing:
-			playerVelocity.y = 0
-			if not onLadder:
-				isClimbing = false
-				gravity = defaultGravity
-			else:
-				gravity = 0  # Disable gravity until the player is fully off the ladder
-		
-		if not isSlipping and not isJumping:
-			gravity = defaultGravity  # Reset gravity when not climbing
+			
+		# If the player leaves the ladder area, ensure climbing is stopped
+		if not onLadder and isClimbing:
+			isClimbing = false
+			gravity = defaultGravity  # Re-enable gravity
+		return
+
+	# If not climbing, but was climbing, stop climbing and reset gravity
+	if isClimbing:
+		isClimbing = false
+		gravity = defaultGravity
+		playerVelocity.y = 0
+		return
+
+	# Regular jump logic
+	if not isSlipping and not isJumping:
+		gravity = defaultGravity  # Reset gravity when not climbing or jumping
 		
 		if Input.is_action_just_pressed("ui_up"):
-			if not isSlipping:
-				if canJump:
-					canJump = false
-					isJumping = true
-					jumpHoldTimer = 0.0
-					playerVelocity.y = -jumpForce
+			if canJump:
+				canJump = false
+				isJumping = true
+				jumpHoldTimer = 0.0
+				playerVelocity.y = -jumpForce  # Apply initial jump force
+				# Check for wall jump
 				if isOnWall and wallJumpAvailable:
 					playerVelocity.y = -wallJumpForce
 					playerVelocity.x = (runSpeed * (1 if not animatedSprite.flip_h else -1)) * 1.5
@@ -177,33 +198,49 @@ func handle_jump(isOnFloor: bool, isOnWall: bool, delta: float):
 					isSliding = false
 					wallJumpTimer = wallJumpCooldown
 					wallJumpGraceTimer = wallJumpGracePeriod
-					
+			elif isOnWall and wallJumpAvailable and wallJumpTimer <= 0:
+				# Allow wall jumping if conditions are met
+				playerVelocity.y = -wallJumpForce
+				playerVelocity.x = (runSpeed * (1 if not animatedSprite.flip_h else -1)) * 1.5
+				wallJumpAvailable = false
+				isSliding = false
+				wallJumpTimer = wallJumpCooldown
+				wallJumpGraceTimer = wallJumpGracePeriod
+
 	if isJumping:
 		if Input.is_action_pressed("ui_up") and jumpHoldTimer < maxJumpHoldTime:
 			jumpHoldTimer += delta
-			gravity = minGravity
+			gravity = minGravity  # Reduce gravity for a longer jump
 		else:
 			isJumping = false
-			gravity = defaultGravity
+			gravity = defaultGravity  # Reset gravity when jump ends
+
+	# Ensure wall jump and regular jump cooldown timers are updated
+	wallJumpTimer = max(wallJumpTimer - delta, 0)
+	wallJumpGraceTimer = max(wallJumpGraceTimer - delta, 0)
+
 
 func update_animation(isOnFloor: bool, isOnWall: bool, isSliding: bool):
 	if isDead:
 		return  # Prevent any animation updates if the player is dead
 
 	var anim = "idle"
+	
 	if isClimbing:
 		anim = "climb"
 	elif isSliding:
 		anim = "slide"
-	elif not isOnFloor:
+	elif isInAir and not isOnFloatingPerson:  # Use isInAir to detect when the player is falling
 		anim = "fall"
 	elif isSlipping:
 		anim = "slipping"
 	elif playerVelocity.x != 0 and not isOnWall and (Input.is_action_pressed("ui_left") or Input.is_action_pressed("ui_right")):
 		anim = "run"
+	
 	if animatedSprite.animation != anim:
 		animatedSprite.stop()
 		animatedSprite.play(anim)
+
 
 func reset_variables():
 	# Reset player states and variables after death
@@ -327,3 +364,13 @@ func _on_DeathTar_body_entered(body):
 		print("died")
 		isDead = true
 		handleDeath()
+		
+
+func _on_tarPerson_entered(body):
+	if body.name == "Player":
+		isOnFloatingPerson = true
+		floatingPersonExitTimer = 0.0  # Reset timer when entering
+
+func _on_tarPerson_exited(body):
+	if body.name == "Player":
+		floatingPersonExitTimer = floatingPersonCooldown  # Start timer for exit cooldown

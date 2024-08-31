@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/Circle8Title.png-7466e9d288803fbcd21e795260731093.stex"
+path="res://.import/lavaplatforms.png-433779b9f4bbdd7752e52c3cd1222733.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/Circle8Title.png"
-dest_files=[ "res://.import/Circle8Title.png-7466e9d288803fbcd21e795260731093.stex" ]
+source_file="res://Assets/lavaplatforms.png"
+dest_files=[ "res://.import/lavaplatforms.png-433779b9f4bbdd7752e52c3cd1222733.stex" ]
 
 [params]
 
@@ -20,7 +20,7 @@ compress/hdr_mode=0
 compress/bptc_ldr=0
 compress/normal_map=0
 flags/repeat=0
-flags/filter=true
+flags/filter=false
 flags/mipmaps=false
 flags/anisotropic=false
 flags/srgb=2

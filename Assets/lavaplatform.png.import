@@ -2,16 +2,11 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/tar_person_0.png-a70adbb88f92a9e9bfda928129e4e929.stex"
-metadata={
-"vram_texture": false
-}
+valid=false
 
 [deps]
 
-source_file="res://Assets/tarPeople/tar_person_0.png"
-dest_files=[ "res://.import/tar_person_0.png-a70adbb88f92a9e9bfda928129e4e929.stex" ]
-
+source_file="res://Assets/lavaplatform.png"
 [params]
 
 compress/mode=0
@@ -20,7 +15,7 @@ compress/hdr_mode=0
 compress/bptc_ldr=0
 compress/normal_map=0
 flags/repeat=0
-flags/filter=false
+flags/filter=true
 flags/mipmaps=false
 flags/anisotropic=false
 flags/srgb=2
