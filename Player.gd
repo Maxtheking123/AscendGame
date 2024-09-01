@@ -16,8 +16,8 @@ var defaultGroundFriction = 15
 var defaultWallSlideSpeed = 200
 var groundFrictionMap = {"ice": 2}
 var wallSlideSpeedMap = {"ice": 600}  # Dictionary to hold friction values for different wall types
-var respawnCoordinateMap = {"9": [0, 0], "8": [45, -3985], "7": [133, -7340]}
-var currentRespawn = "7"
+var respawnCoordinateMap = {"9": [0, 0], "8": [45, -3985], "7": [133, -7340], "6": [40, -11900]}
+var currentRespawn = "6"
 
 var leftButton = ""
 
@@ -69,7 +69,7 @@ func _physics_process(delta):
 
 		
 	# Debugging for finding checkpoints
-	# print("playerX: ", position.x, " playerY: ", position.y)
+	print("playerX: ", position.x, " playerY: ", position.y)
 	var isOnWall = is_on_wall()
 	var isOnFloor = is_on_floor()
 
@@ -83,8 +83,13 @@ func _physics_process(delta):
 	if isOnWall and isHoldingWall and not isOnFloor and wallJumpGraceTimer <= 0:
 		var wallFriction = get_wall_friction()
 		handle_wall_slide(wallFriction, delta)
-	elif not isOnFloor:
+	elif not isOnFloor and not isOnFloatingThing:
 		handle_fall(delta)
+	
+	# Makes sure you can jump even if its sinking down
+	elif isOnFloatingThing:
+		handle_fall(delta, true)
+		canJump = true
 	else:
 		handle_ground(delta)
 
@@ -278,10 +283,12 @@ func handle_wall_slide(wallFriction, delta):
 	isSliding = true
 	playerVelocity.y = lerp(playerVelocity.y, wallFriction, delta)
 
-func handle_fall(delta):
+func handle_fall(delta, floating = false):
 	playerVelocity.y += gravity * delta
-	isSliding = false
-	canJump = false
+	# Makes sure it pushes you down but makes sure you can jump
+	if not floating:
+		isSliding = false
+		canJump = false
 
 func handle_ground(delta):
 	var collision = get_slide_collision(0)
