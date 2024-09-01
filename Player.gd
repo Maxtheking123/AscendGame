@@ -16,7 +16,7 @@ var defaultGroundFriction = 15
 var defaultWallSlideSpeed = 200
 var groundFrictionMap = {"ice": 2}
 var wallSlideSpeedMap = {"ice": 600}  # Dictionary to hold friction values for different wall types
-var respawnCoordinateMap = {"9": [0, 0], "8": [45, -3985], "7": [133, -7340], "6": [40, -11900]}
+var respawnCoordinateMap = {"9": [0, 0], "8": [45, -3985], "7": [133, -7340], "6": [-140, -11900]}
 var currentRespawn = "6"
 
 var leftButton = ""
@@ -41,6 +41,7 @@ var jumpHoldTimer = 0.0  # Track how long the jump button has been held
 var canJump = true  # Used for jump state control
 var distance = 0.0 # Used to track distance to ground
 var isOnFloatingThing = false
+var debugRespawnPosition = [0, 0] # Used to quick respawn during testing
 
 # Nodes
 onready var animatedSprite = $AnimatedSprite
@@ -54,8 +55,12 @@ func _ready():
 	# Initialize other settings here
 	wallSlideSpeedMap["default"] = defaultWallSlideSpeed
 	# Any other initialization
+	
+	debugRespawnPosition = position
 
 func _physics_process(delta):
+	if Input.is_action_pressed("debugRespawn"):
+		position = debugRespawnPosition
 	if isOnFloatingThing:
 		FloatingThingExitTimer += delta
 		if FloatingThingExitTimer > FloatingThingCooldown:
@@ -64,12 +69,12 @@ func _physics_process(delta):
 		FloatingThingExitTimer = 0.0
 		
 	if isDead:
-		handleDeath()
+		handle_death()
 		return
 
 		
 	# Debugging for finding checkpoints
-	print("playerX: ", position.x, " playerY: ", position.y)
+	# print("playerX: ", position.x, " playerY: ", position.y)
 	var isOnWall = is_on_wall()
 	var isOnFloor = is_on_floor()
 
@@ -111,7 +116,7 @@ func _physics_process(delta):
 	wallJumpGraceTimer = max(wallJumpGraceTimer - delta, 0)
 
 
-func handleDeath():
+func handle_death():
 	if isDead:  # Only move to the respawn point if the player is actually dead
 		position = Vector2(respawnCoordinateMap[currentRespawn][0], respawnCoordinateMap[currentRespawn][1])
 		isDead = false  # Reset the death state
@@ -368,7 +373,11 @@ func _on_Respawn_body_entered(body, sender):
 func _kill_player_from_touching(body):
 	if(body.name == "Player"):
 		isDead = true
-		handleDeath()
+		handle_death()
+
+func _kill_player_other():
+	isDead = true
+	handle_death()
 
 func _on_floating_thing_entered(body):
 	if body.name == "Player":
@@ -378,4 +387,3 @@ func _on_floating_thing_entered(body):
 func _on_floating_thing_exited(body):
 	if body.name == "Player":
 		FloatingThingExitTimer = FloatingThingCooldown  # Start timer for exit cooldown
-

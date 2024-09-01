@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/coffin.png-369a1e34235c4a422d531ce386a3ab44.stex"
+path="res://.import/Minotaur - Sprite Sheet.png-4a4280123df6a2d035834b5037ce48be.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://coffin.png"
-dest_files=[ "res://.import/coffin.png-369a1e34235c4a422d531ce386a3ab44.stex" ]
+source_file="res://Assets/tilesets/Minotaur - Sprite Sheet.png"
+dest_files=[ "res://.import/Minotaur - Sprite Sheet.png-4a4280123df6a2d035834b5037ce48be.stex" ]
 
 [params]
 
