@@ -5,6 +5,7 @@ var gravity = 1000
 var minGravity = 600
 var defaultGravity = 1000
 var maxGravity = 2000
+var sinkSpeed = 100
 var minSlippSpeed = 3
 var groundMaxDistance = 30
 var ladderClimbSpeed = 200
@@ -27,6 +28,7 @@ var isSliding = false
 var isSlipping = false
 var isInAir = false
 var isDead = false
+var isInWater = false
 var wallJumpAvailable = true
 var wallJumpTimer = 0.0
 var wallJumpGraceTimer = 0.0
@@ -59,6 +61,7 @@ func _ready():
 	debugRespawnPosition = position
 
 func _physics_process(delta):
+	print("water: ",isInWater)
 	if Input.is_action_pressed("debugRespawn"):
 		position = debugRespawnPosition
 	if isOnFloatingThing:
@@ -255,6 +258,7 @@ func reset_variables():
 	isSliding = false
 	isSlipping = false
 	isInAir = false
+	isInWater = false
 	wallJumpAvailable = true
 	wallJumpTimer = 0.0
 	wallJumpGraceTimer = 0.0
@@ -290,7 +294,13 @@ func handle_wall_slide(wallFriction, delta):
 	playerVelocity.y = lerp(playerVelocity.y, wallFriction, delta)
 
 func handle_fall(delta, floating = false):
-	playerVelocity.y += gravity * delta
+	print(isInWater)
+	# Makes water sink you slowly
+	if not isInWater:
+		playerVelocity.y += gravity * delta
+	else:
+		playerVelocity.y += sinkSpeed * delta
+		
 	# Makes sure it pushes you down but makes sure you can jump
 	if not floating:
 		isSliding = false
@@ -299,6 +309,8 @@ func handle_fall(delta, floating = false):
 func handle_ground(delta):
 	var collision = get_slide_collision(0)
 	if collision and collision.normal.y < 1:
+		if isInWater:
+			_kill_player_other()
 		# Slope detection and calculations
 		var slope_angle = abs((acos(collision.normal.y) * 180 / PI) - 180)
 		var slope_direction = Vector2(collision.normal.y, -collision.normal.x).normalized()
@@ -388,3 +400,15 @@ func _on_floating_thing_entered(body):
 func _on_floating_thing_exited(body):
 	if body.name == "Player":
 		FloatingThingExitTimer = FloatingThingCooldown  # Start timer for exit cooldown
+
+
+func _water_exited(body):
+	print(body.name)
+	if (body.name == "Player"):
+		isInWater = false
+
+
+func _water_entered(body):
+	print(body.name)
+	if (body.name == "Player"):
+		isInWater = true
