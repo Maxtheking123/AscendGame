@@ -61,7 +61,6 @@ func _ready():
 	debugRespawnPosition = position
 
 func _physics_process(delta):
-	print("water: ",isInWater)
 	if Input.is_action_pressed("debugRespawn"):
 		position = debugRespawnPosition
 	if isOnFloatingThing:
@@ -141,7 +140,6 @@ func handle_horizontal_movement(isOnFloor: bool, delta: float):
 			
 		animatedSprite.flip_h = true
 	elif Input.is_action_pressed("ui_right"):
-		print(isSliding)
 		if not isSlipping and not onLadder or (isSlipping and isInAir):
 			playerVelocity.x = runSpeed
 			
@@ -191,7 +189,7 @@ func handle_jump(isOnFloor: bool, isOnWall: bool, delta: float):
 		return
 
 	# Regular jump logic
-	if not isSlipping and not isJumping:
+	if not isSlipping and not isJumping and not isInWater:
 		gravity = defaultGravity  # Reset gravity when not climbing or jumping
 		
 		if Input.is_action_just_pressed("ui_up"):
@@ -289,17 +287,19 @@ func get_ground_friction() -> float:
 
 func handle_wall_slide(wallFriction, delta):
 	if not isSliding and playerVelocity.y < 0:
-		playerVelocity.y = playerVelocity.y/5
-	isSliding = true
+		playerVelocity.y = playerVelocity.y / 5
+	if is_on_wall() and not is_on_floor() and not isInWater:
+		isSliding = true
+	else:
+		isSliding = false
 	playerVelocity.y = lerp(playerVelocity.y, wallFriction, delta)
 
 func handle_fall(delta, floating = false):
-	print(isInWater)
 	# Makes water sink you slowly
 	if not isInWater:
 		playerVelocity.y += gravity * delta
 	else:
-		playerVelocity.y += sinkSpeed * delta
+		playerVelocity.y += (sinkSpeed / 2) * delta
 		
 	# Makes sure it pushes you down but makes sure you can jump
 	if not floating:
@@ -309,6 +309,7 @@ func handle_fall(delta, floating = false):
 func handle_ground(delta):
 	var collision = get_slide_collision(0)
 	if collision and collision.normal.y < 1:
+		isSliding = false
 		if isInWater:
 			_kill_player_other()
 		# Slope detection and calculations
@@ -403,12 +404,11 @@ func _on_floating_thing_exited(body):
 
 
 func _water_exited(body):
-	print(body.name)
 	if (body.name == "Player"):
 		isInWater = false
 
 
 func _water_entered(body):
-	print(body.name)
 	if (body.name == "Player"):
 		isInWater = true
+		playerVelocity.y = sinkSpeed
