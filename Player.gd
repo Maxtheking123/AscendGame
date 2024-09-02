@@ -17,7 +17,7 @@ var defaultWallSlideSpeed = 200
 var groundFrictionMap = {"ice": 2}
 var wallSlideSpeedMap = {"ice": 600}  # Dictionary to hold friction values for different wall types
 var respawnCoordinateMap = {"9": [0, 0], "8": [45, -3985], "7": [133, -7340], "6": [-140, -11900]}
-var currentRespawn = "6"
+var currentRespawn = "8"
 
 var leftButton = ""
 
@@ -138,6 +138,7 @@ func handle_horizontal_movement(isOnFloor: bool, delta: float):
 			
 		animatedSprite.flip_h = true
 	elif Input.is_action_pressed("ui_right"):
+		print(isSliding)
 		if not isSlipping and not onLadder or (isSlipping and isInAir):
 			playerVelocity.x = runSpeed
 			
