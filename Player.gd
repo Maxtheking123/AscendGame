@@ -36,7 +36,7 @@ var isOnFloor = false
 var wallJumpAvailable = true
 var wallJumpTimer = 0.0
 var wallJumpGraceTimer = 0.0
-var wallJumpCooldown = 0.2  # Time in seconds before another wall jump can be performed
+var wallJumpCooldown = 0.0  # Time in seconds before another wall jump can be performed
 var wallJumpGracePeriod = 0.7  # Time in seconds during which the player can't grab the wall after jumping
 var FloatingThingExitTimer = 0.0
 var FloatingThingCooldown = 0.5
@@ -62,7 +62,7 @@ func _ready():
 func _physics_process(delta):
 	if Input.is_action_pressed("debugRespawn"):
 		position = debugRespawnPosition
-	if (position.x > 880) or (position.x < -850):
+	if (position.x > 880) or (position.x < -900):
 		_kill_player_other()
 	if isOnFloatingThing:
 		FloatingThingExitTimer += delta
@@ -76,7 +76,6 @@ func _physics_process(delta):
 		return
 
 	update_state(delta)
-
 	move_and_slide(playerVelocity, Vector2.UP)
 	check_head_collision()  # Now this method is called
 
@@ -86,7 +85,6 @@ func _physics_process(delta):
 	wallJumpGraceTimer = max(wallJumpGraceTimer - delta, 0)
 
 func update_state(delta):
-	print("Current State: ", state)  # Debugging line
 	match state:
 		State.SINKING:
 			state_sinking(delta)
@@ -108,16 +106,15 @@ func state_sinking(delta):
 		state = State.INAIR
 
 func state_inair(delta):
-	playerVelocity.y += gravity * delta
+	handle_fall(delta)
 	isOnWall = is_on_wall()
 	isOnFloor = is_on_floor()
 
 	handle_jump(isOnFloor, isOnWall, delta)
 	handle_horizontal_movement(isOnFloor, delta)
-	
 	if isOnFloor:
 		state = State.IDLE  # Transition to IDLE instead of WALKING
-	elif isOnWall and Input.is_action_pressed("ui_left") or Input.is_action_pressed("ui_right"):
+	elif isOnWall and (Input.is_action_pressed("ui_left") or Input.is_action_pressed("ui_right")):
 		state = State.SLIDING
 	elif onLadder:
 		state = State.CLIMBING
@@ -126,8 +123,8 @@ func state_walking(delta):
 	handle_horizontal_movement(true, delta)
 	handle_jump(true, false, delta)
 	handle_ground(delta)
-
-	if isInAir:
+	
+	if not is_on_floor():
 		state = State.INAIR
 	elif onLadder:
 		state = State.CLIMBING
@@ -135,9 +132,9 @@ func state_walking(delta):
 		state = State.IDLE  # Transition to idle if not moving
 
 func state_idle(delta):
-	handle_jump(true, false, delta)
+	handle_jump(true, false, delta)  # This will now handle resetting canJump when on the floor
 	handle_horizontal_movement(true, delta)
-
+	
 	if isJumping:
 		state = State.INAIR
 	elif playerVelocity.x != 0 and (Input.is_action_pressed("ui_left") or Input.is_action_pressed("ui_right")):
@@ -146,21 +143,42 @@ func state_idle(delta):
 		state = State.CLIMBING
 	elif not is_on_floor():
 		state = State.INAIR  # Ensure we handle cases where the player falls
+	elif is_on_floor():
+		canJump = true
+
 
 
 func state_climbing(delta):
 	handle_jump(false, false, delta)
+	handle_horizontal_movement(false, delta)
 
 	if not onLadder:
 		state = State.INAIR
 
 func state_sliding(delta):
-	var wallFriction = get_wall_friction()
-	handle_jump(false, true, delta)
-	handle_wall_slide(wallFriction, delta)
+	if wallJumpTimer <= 0:
+		var wallFriction = get_wall_friction()
+		handle_jump(false, true, delta)
 
-	if not is_on_wall() or is_on_floor():
-		state = State.INAIR if not is_on_floor() else State.WALKING
+		if is_on_wall() and not is_on_floor():
+			var isPushingTowardsWall = (Input.is_action_pressed("ui_left") and animatedSprite.flip_h) or (Input.is_action_pressed("ui_right") and not animatedSprite.flip_h)
+			print(wallJumpTimer)
+			if isPushingTowardsWall and wallJumpTimer <= 0:
+				isSliding = true
+				handle_wall_slide(wallFriction, delta)
+			else:
+				isSliding = false
+				if is_on_floor():
+					state = State.WALKING
+				else:
+					state = State.INAIR
+		else:
+			isSliding = false
+			if is_on_floor():
+				state = State.WALKING
+			else:
+				state = State.INAIR
+
 
 func handle_death():
 	position = Vector2(respawnCoordinateMap[currentRespawn][0], respawnCoordinateMap[currentRespawn][1])
@@ -190,14 +208,10 @@ func handle_horizontal_movement(isOnFloor: bool, delta: float):
 		playerVelocity.x = 0
 
 func handle_jump(isOnFloor: bool, isOnWall: bool, delta: float):
+
 	if isDead:
 		return
-	
-	print("canJump ",canJump)
-	print("canJump ",canJump)
-	print("canJump ",canJump)
-	
-	
+
 	if onLadder:
 		gravity = 0
 		if Input.is_action_pressed("ui_up"):
@@ -221,21 +235,25 @@ func handle_jump(isOnFloor: bool, isOnWall: bool, delta: float):
 
 	if not isSlipping and not isJumping and not isInWater:
 		gravity = defaultGravity
-		
+
+		# Execute jump
 		if Input.is_action_just_pressed("ui_up"):
-			if canJump:
+			#print("canJump ",isOnWall," isOnWall ",wallJumpAvailable," wallJumpAvailable ",wallJumpTimer," wallJumpTimer ",wallJumpTimer)
+			if canJump and not isOnWall:
 				canJump = false
 				isJumping = true
-				state = State.INAIR
 				jumpHoldTimer = 0.0
 				playerVelocity.y = -jumpForce
-				if isOnWall and wallJumpAvailable:
-					playerVelocity.y = -wallJumpForce
-					playerVelocity.x = (runSpeed * (1 if not animatedSprite.flip_h else -1)) * 1.5
-					wallJumpAvailable = false
-					isSliding = false
-					wallJumpTimer = wallJumpCooldown
-					wallJumpGraceTimer = wallJumpGracePeriod
+				state = State.INAIR
+			elif isOnWall and wallJumpAvailable and wallJumpTimer <= 0:
+				playerVelocity.y = -wallJumpForce
+				playerVelocity.x = (runSpeed * (1 if not animatedSprite.flip_h else -1)) * 1.5
+				isSliding = false
+				wallJumpAvailable = false
+				wallJumpTimer = wallJumpCooldown
+				wallJumpGraceTimer = wallJumpGracePeriod
+				print("wallJumpAvailable ", wallJumpAvailable, " wallJumpTimer ",wallJumpTimer, " wallJumpGraceTimer ", wallJumpGraceTimer)
+				state = State.INAIR
 
 	if isJumping:
 		if Input.is_action_pressed("ui_up") and jumpHoldTimer < maxJumpHoldTime:
@@ -246,7 +264,10 @@ func handle_jump(isOnFloor: bool, isOnWall: bool, delta: float):
 			gravity = defaultGravity
 
 	if isOnFloor and not isJumping and not Input.is_action_pressed("ui_left") and not Input.is_action_pressed("ui_right"):
-		state = State.IDLE  # Reset to idle when landing
+		state = State.IDLE
+
+
+
 
 # Add the missing method here
 func check_head_collision():
@@ -312,12 +333,10 @@ func get_ground_friction() -> float:
 
 func handle_wall_slide(wallFriction, delta):
 	if not isSliding and playerVelocity.y < 0:
-		playerVelocity.y = playerVelocity.y / 5
-	if is_on_wall() and not is_on_floor() and not isInWater:
-		isSliding = true
-	else:
-		isSliding = false
+		playerVelocity.y /= 5
+	isSliding = true
 	playerVelocity.y = lerp(playerVelocity.y, wallFriction, delta)
+
 
 func handle_fall(delta, floating = false):
 	if not isInWater:
@@ -348,11 +367,11 @@ func handle_ground(delta):
 			isSlipping = true
 		else:
 			isSlipping = false
-			playerVelocity.y = 5
+			if playerVelocity.y > 5:
+				playerVelocity.y = 5
 	else:
 		isSlipping = false
 	wallJumpAvailable = true
-	isJumping = false
 	canJump = true
 
 func _on_Ladder_area_entered(area):
