@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/BigRock.png-808feaf5e209f306b39e9ca3d529bebf.stex"
+path="res://.import/rain.png-136fbe2a014a54eea0a0a12b05af108d.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/tilesets/BigRock.png"
-dest_files=[ "res://.import/BigRock.png-808feaf5e209f306b39e9ca3d529bebf.stex" ]
+source_file="res://Assets/rain.png"
+dest_files=[ "res://.import/rain.png-136fbe2a014a54eea0a0a12b05af108d.stex" ]
 
 [params]
 
@@ -20,7 +20,7 @@ compress/hdr_mode=0
 compress/bptc_ldr=0
 compress/normal_map=0
 flags/repeat=0
-flags/filter=true
+flags/filter=false
 flags/mipmaps=false
 flags/anisotropic=false
 flags/srgb=2

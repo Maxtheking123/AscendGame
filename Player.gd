@@ -60,9 +60,10 @@ func _ready():
 	debugRespawnPosition = position
 
 func _physics_process(delta):
+	#print(position)
 	if Input.is_action_pressed("debugRespawn"):
 		position = debugRespawnPosition
-	if (position.x > 880) or (position.x < -900):
+	if (position.x > 880) or (position.x < -950):
 		_kill_player_other()
 	if isOnFloatingThing:
 		FloatingThingExitTimer += delta
@@ -145,6 +146,7 @@ func state_idle(delta):
 		state = State.INAIR  # Ensure we handle cases where the player falls
 	elif is_on_floor():
 		canJump = true
+		wallJumpAvailable = true
 
 
 
@@ -162,7 +164,6 @@ func state_sliding(delta):
 
 		if is_on_wall() and not is_on_floor():
 			var isPushingTowardsWall = (Input.is_action_pressed("ui_left") and animatedSprite.flip_h) or (Input.is_action_pressed("ui_right") and not animatedSprite.flip_h)
-			print(wallJumpTimer)
 			if isPushingTowardsWall and wallJumpTimer <= 0:
 				isSliding = true
 				handle_wall_slide(wallFriction, delta)
@@ -238,7 +239,8 @@ func handle_jump(isOnFloor: bool, isOnWall: bool, delta: float):
 
 		# Execute jump
 		if Input.is_action_just_pressed("ui_up"):
-			#print("canJump ",isOnWall," isOnWall ",wallJumpAvailable," wallJumpAvailable ",wallJumpTimer," wallJumpTimer ",wallJumpTimer)
+			isOnWall = is_on_wall()
+			print("canJump ",canJump," isOnWall ",isOnWall," wallJumpAvailable ",wallJumpAvailable," wallJumpTimer ",wallJumpTimer)
 			if canJump and not isOnWall:
 				canJump = false
 				isJumping = true
