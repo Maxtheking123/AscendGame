@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/bigterrainTileMap16x16.png-1d1948a9af0a4315497b8763de8714d3.stex"
+path="res://.import/PushingPerson.png-6b27bcc585f66d3ceb4039c781935226.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/tilesets/bigterrainTileMap16x16.png"
-dest_files=[ "res://.import/bigterrainTileMap16x16.png-1d1948a9af0a4315497b8763de8714d3.stex" ]
+source_file="res://Assets/tilesets/PushingPerson.png"
+dest_files=[ "res://.import/PushingPerson.png-6b27bcc585f66d3ceb4039c781935226.stex" ]
 
 [params]
 
