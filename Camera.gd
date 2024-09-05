@@ -1,5 +1,7 @@
 extends Camera2D
 
+var maxHeight = -36870
+
 # Sets camera position to player position when game is loaded
 func _ready():
 	var player = get_node("../Player")
@@ -11,6 +13,8 @@ func _process(delta):
 	
 	if player:
 		var targetPositionY = player.position.y
+		if targetPositionY < maxHeight:
+			targetPositionY = maxHeight
 		
 		# Calculates distance needed to move to use later to determine movement speed
 		var distance = abs(position.y - targetPositionY)
@@ -20,3 +24,4 @@ func _process(delta):
 		
 		# Moves into the target position
 		position.y = lerp(position.y, targetPositionY, camMovementSpeed)
+		print(position)

@@ -107,9 +107,6 @@ func update_state(delta):
 			state_idle(delta)
 		State.INWIND:
 			state_in_wind(delta)
-	
-	# Debug output
-	print(state)
 
 
 func state_sinking(delta):
@@ -195,10 +192,6 @@ func state_sliding(delta):
 func state_in_wind(delta):
 	handle_fall(delta)
 	handle_jump(false, false, delta)
-
-	# Debugging output
-	print("State: INWIND")
-	print("Player Velocity: ", playerVelocity)
 	
 	# Calculate wind force
 	var windForce = windVelocity.x * windDirection.x * windModifier * 0.5
@@ -207,22 +200,18 @@ func state_in_wind(delta):
 	if Input.is_action_pressed("ui_left"):
 		# Moving left
 		if windDirection.x < 0:
-			print("wind right")
 			# Wind is blowing right
 			playerVelocity.x = 0  # Stop moving left if wind is blowing right
 		else:
-			print("wind right")
 			# Wind is blowing left
 			playerVelocity.x = lerp(playerVelocity.x, -runSpeed, 0.1) - windForce
 		animatedSprite.flip_h = true
 	elif Input.is_action_pressed("ui_right"):
 		# Moving right
 		if windDirection.x < 0:
-			print("wind right")
 			# Wind is blowing right
 			playerVelocity.x = lerp(playerVelocity.x, runSpeed, 0.1) - windForce
 		else:
-			print("wind right")
 			# Wind is blowing left
 			playerVelocity.x = 0  # Stop moving right if wind is blowing left
 		animatedSprite.flip_h = false
@@ -315,7 +304,6 @@ func handle_jump(isOnFloor: bool, isOnWall: bool, delta: float):
 				wallJumpAvailable = false
 				wallJumpTimer = wallJumpCooldown
 				wallJumpGraceTimer = wallJumpGracePeriod
-				print("wallJumpAvailable ", wallJumpAvailable, " wallJumpTimer ",wallJumpTimer, " wallJumpGraceTimer ", wallJumpGraceTimer)
 				if not isInWind:
 					state = State.INAIR
 				else:
@@ -532,7 +520,6 @@ func _on_wind_entered(body, wind_dir: Vector2, wind_velocity: Vector2):
 		windVelocity = wind_velocity
 		state = State.INWIND
 		isInWind = true
-		print("Entered wind: ", windDirection, windVelocity)
 
 func _on_wind_exited(body):
 	if body.name == "Player":
@@ -540,4 +527,3 @@ func _on_wind_exited(body):
 		windVelocity = 0
 		state = State.INAIR
 		isInWind = false
-		print("Exited wind")
