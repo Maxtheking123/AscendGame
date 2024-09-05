@@ -4,8 +4,11 @@ extends KinematicBody2D
 var gravity = 1000
 var minGravity = 600
 var defaultGravity = 1000
+var horizontalWindGravity = 0
 var maxGravity = 2000
 var sinkSpeed = 100
+var windVelocity = 0
+var windModifier = 30
 var minSlippSpeed = 3
 var groundMaxDistance = 30
 var ladderClimbSpeed = 200
@@ -20,14 +23,17 @@ var wallSlideSpeedMap = {"ice": 600}  # Dictionary to hold friction values for d
 var respawnCoordinateMap = {"9": [0, 0], "8": [45, -3985], "7": [133, -7340], "6": [-140, -11900]}
 var currentRespawn = "8"
 
-enum State {SINKING, INAIR, WALKING, CLIMBING, SLIDING, IDLE}
+enum State {SINKING, INAIR, WALKING, CLIMBING, SLIDING, IDLE, INWIND}
+
 
 var state = State.IDLE
 
 # Internal state
 var playerVelocity = Vector2.ZERO
+var windDirection = Vector2.ZERO
 var isSliding = false
 var isSlipping = false
+var isInWind = false
 var isInAir = false
 var isDead = false
 var isInWater = false
@@ -99,6 +105,12 @@ func update_state(delta):
 			state_sliding(delta)
 		State.IDLE:
 			state_idle(delta)
+		State.INWIND:
+			state_in_wind(delta)
+	
+	# Debug output
+	print(state)
+
 
 func state_sinking(delta):
 	playerVelocity.y += gravity * delta
@@ -180,11 +192,55 @@ func state_sliding(delta):
 			else:
 				state = State.INAIR
 
+func state_in_wind(delta):
+	handle_fall(delta)
+	handle_jump(false, false, delta)
+
+	# Debugging output
+	print("State: INWIND")
+	print("Player Velocity: ", playerVelocity)
+	
+	# Calculate wind force
+	var windForce = windVelocity.x * windDirection.x * windModifier * 0.5
+	
+	# Apply wind force with input-based control
+	if Input.is_action_pressed("ui_left"):
+		# Moving left
+		if windDirection.x < 0:
+			print("wind right")
+			# Wind is blowing right
+			playerVelocity.x = 0  # Stop moving left if wind is blowing right
+		else:
+			print("wind right")
+			# Wind is blowing left
+			playerVelocity.x = lerp(playerVelocity.x, -runSpeed, 0.1) - windForce
+		animatedSprite.flip_h = true
+	elif Input.is_action_pressed("ui_right"):
+		# Moving right
+		if windDirection.x < 0:
+			print("wind right")
+			# Wind is blowing right
+			playerVelocity.x = lerp(playerVelocity.x, runSpeed, 0.1) - windForce
+		else:
+			print("wind right")
+			# Wind is blowing left
+			playerVelocity.x = 0  # Stop moving right if wind is blowing left
+		animatedSprite.flip_h = false
+	else:
+		# No horizontal input
+		playerVelocity.x = lerp(playerVelocity.x, 0, 0.1)
+
+
+
+
+
 
 func handle_death():
 	position = Vector2(respawnCoordinateMap[currentRespawn][0], respawnCoordinateMap[currentRespawn][1])
 	isDead = false
 	reset_variables()
+
+
 
 func handle_horizontal_movement(isOnFloor: bool, delta: float):
 	if isDead:
@@ -205,6 +261,8 @@ func handle_horizontal_movement(isOnFloor: bool, delta: float):
 	elif isOnFloor:
 		var friction = get_ground_friction()
 		playerVelocity.x = lerp(playerVelocity.x, 0, friction * delta)
+	elif state == State.INWIND:
+		playerVelocity.x = playerVelocity.x
 	else:
 		playerVelocity.x = 0
 
@@ -240,13 +298,16 @@ func handle_jump(isOnFloor: bool, isOnWall: bool, delta: float):
 		# Execute jump
 		if Input.is_action_just_pressed("ui_up"):
 			isOnWall = is_on_wall()
-			print("canJump ",canJump," isOnWall ",isOnWall," wallJumpAvailable ",wallJumpAvailable," wallJumpTimer ",wallJumpTimer)
+			# print("canJump ",canJump," isOnWall ",isOnWall," wallJumpAvailable ",wallJumpAvailable," wallJumpTimer ",wallJumpTimer)
 			if canJump and not isOnWall:
 				canJump = false
 				isJumping = true
 				jumpHoldTimer = 0.0
 				playerVelocity.y = -jumpForce
-				state = State.INAIR
+				if not isInWind:
+					state = State.INAIR
+				else:
+					state = State.INWIND
 			elif isOnWall and wallJumpAvailable and wallJumpTimer <= 0:
 				playerVelocity.y = -wallJumpForce
 				playerVelocity.x = (runSpeed * (1 if not animatedSprite.flip_h else -1)) * 1.5
@@ -255,12 +316,19 @@ func handle_jump(isOnFloor: bool, isOnWall: bool, delta: float):
 				wallJumpTimer = wallJumpCooldown
 				wallJumpGraceTimer = wallJumpGracePeriod
 				print("wallJumpAvailable ", wallJumpAvailable, " wallJumpTimer ",wallJumpTimer, " wallJumpGraceTimer ", wallJumpGraceTimer)
-				state = State.INAIR
+				if not isInWind:
+					state = State.INAIR
+				else:
+					state = State.INWIND
 
 	if isJumping:
 		if Input.is_action_pressed("ui_up") and jumpHoldTimer < maxJumpHoldTime:
 			jumpHoldTimer += delta
 			gravity = minGravity
+			if not isInWind:
+				state = State.INAIR
+			else:
+				state = State.INWIND
 		else:
 			isJumping = false
 			gravity = defaultGravity
@@ -292,6 +360,8 @@ func update_animation():
 		anim = "fall"
 	elif state == State.SINKING:
 		anim = "sinking"
+	elif state == State.INWIND:
+		anim = "fall"
 	elif playerVelocity.x != 0 and (state == State.WALKING or state == State.INAIR):
 		anim = "run"
 	
@@ -342,13 +412,31 @@ func handle_wall_slide(wallFriction, delta):
 
 func handle_fall(delta, floating = false):
 	if not isInWater:
+		# Apply vertical gravity
 		playerVelocity.y += gravity * delta
+	
+		# Apply constant horizontal wind force if in wind state
+		if state == State.INWIND and not is_on_floor():
+			var windSpeed = windVelocity.x * -windDirection.x * windModifier
+			# Cap the horizontal speed to prevent continuous acceleration
+			if abs(playerVelocity.x) > abs(windSpeed):
+				playerVelocity.x = windSpeed
+			else:
+				# Use delta to apply wind force gradually
+				playerVelocity.x = lerp(playerVelocity.x, windSpeed, delta * 4)
+		elif is_on_floor():
+			isOnFloor = true
+			state = State.IDLE
 	else:
 		playerVelocity.y += (sinkSpeed / 2) * delta
-		
+	
 	if not floating:
 		isSliding = false
 		canJump = false
+
+
+
+
 
 func handle_ground(delta):
 	var collision = get_slide_collision(0)
@@ -436,3 +524,20 @@ func _water_entered(body):
 	if body.name == "Player":
 		isInWater = true
 		playerVelocity.y = sinkSpeed
+
+
+func _on_wind_entered(body, wind_dir: Vector2, wind_velocity: Vector2):
+	if body.name == "Player":
+		windDirection = wind_dir
+		windVelocity = wind_velocity
+		state = State.INWIND
+		isInWind = true
+		print("Entered wind: ", windDirection, windVelocity)
+
+func _on_wind_exited(body):
+	if body.name == "Player":
+		windDirection = Vector2.ZERO
+		windVelocity = 0
+		state = State.INAIR
+		isInWind = false
+		print("Exited wind")
