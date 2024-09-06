@@ -23,7 +23,7 @@ var wallSlideSpeedMap = {"ice": 600}  # Dictionary to hold friction values for d
 var respawnCoordinateMap = {"9": [0, 0], "8": [45, -3985], "7": [133, -7340], "6": [-140, -11900]}
 var currentRespawn = "8"
 
-enum State {SINKING, INAIR, WALKING, CLIMBING, SLIDING, IDLE, INWIND}
+enum State {SINKING, INAIR, WALKING, CLIMBING, SLIDING, IDLE, INWIND, GAMEOVER}
 
 
 var state = State.IDLE
@@ -92,21 +92,24 @@ func _physics_process(delta):
 	wallJumpGraceTimer = max(wallJumpGraceTimer - delta, 0)
 
 func update_state(delta):
-	match state:
-		State.SINKING:
-			state_sinking(delta)
-		State.INAIR:
-			state_inair(delta)
-		State.WALKING:
-			state_walking(delta)
-		State.CLIMBING:
-			state_climbing(delta)
-		State.SLIDING:
-			state_sliding(delta)
-		State.IDLE:
-			state_idle(delta)
-		State.INWIND:
-			state_in_wind(delta)
+	if state == State.GAMEOVER:
+		state_gameOver(delta)
+	else:
+		match state:
+			State.SINKING:
+				state_sinking(delta)
+			State.INAIR:
+				state_inair(delta)
+			State.WALKING:
+				state_walking(delta)
+			State.CLIMBING:
+				state_climbing(delta)
+			State.SLIDING:
+				state_sliding(delta)
+			State.IDLE:
+				state_idle(delta)
+			State.INWIND:
+				state_in_wind(delta)
 
 
 func state_sinking(delta):
@@ -220,8 +223,8 @@ func state_in_wind(delta):
 		playerVelocity.x = lerp(playerVelocity.x, 0, 0.1)
 
 
-
-
+func state_gameOver():
+	pass
 
 
 func handle_death():
@@ -527,3 +530,8 @@ func _on_wind_exited(body):
 		windVelocity = 0
 		state = State.INAIR
 		isInWind = false
+
+
+func handle_gameOver(body):
+	if body.name == "Player":
+		state = State.GAMEOVER

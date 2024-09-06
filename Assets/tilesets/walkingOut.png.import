@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/examining-attic-ladders-220x220.png-cb7ac8dd699afeef75003752a0faab9e.stex"
+path="res://.import/walkingOut.png-5a2241d049ef6d1e834effc0fcd422ba.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/background/examining-attic-ladders-220x220.png"
-dest_files=[ "res://.import/examining-attic-ladders-220x220.png-cb7ac8dd699afeef75003752a0faab9e.stex" ]
+source_file="res://Assets/tilesets/walkingOut.png"
+dest_files=[ "res://.import/walkingOut.png-5a2241d049ef6d1e834effc0fcd422ba.stex" ]
 
 [params]
 
