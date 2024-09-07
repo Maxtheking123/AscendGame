@@ -24,4 +24,3 @@ func _process(delta):
 		
 		# Moves into the target position
 		position.y = lerp(position.y, targetPositionY, camMovementSpeed)
-		print(position)

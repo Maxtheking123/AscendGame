@@ -20,8 +20,8 @@ var defaultGroundFriction = 15
 var defaultWallSlideSpeed = 200
 var groundFrictionMap = {"ice": 2}
 var wallSlideSpeedMap = {"ice": 600}  # Dictionary to hold friction values for different wall types
-var respawnCoordinateMap = {"9": [0, 0], "8": [45, -3985], "7": [133, -7340], "6": [-140, -11900]}
-var currentRespawn = "8"
+var respawnCoordinateMap = {"9": [0, 0], "8": [45, -3985], "7": [133, -7340], "6": [-140, -11900], "5": [-74, -17376], "4": [659, -21646], "3": [57, -25144], "2": [51, -29524], "1": [77, -32880]}
+var currentRespawn = "9"
 
 enum State {SINKING, INAIR, WALKING, CLIMBING, SLIDING, IDLE, INWIND, GAMEOVER}
 
@@ -46,6 +46,8 @@ var wallJumpCooldown = 0.0  # Time in seconds before another wall jump can be pe
 var wallJumpGracePeriod = 0.7  # Time in seconds during which the player can't grab the wall after jumping
 var FloatingThingExitTimer = 0.0
 var FloatingThingCooldown = 0.5
+var animation_delay = 2.5  # Delay before starting the player scaling
+var GameoverTimer = 0.0  # Track the time passed since the game over state started
 var onLadder = false
 var isClimbing = false
 var isJumping = false  # Track if the player is currently in a jump
@@ -59,6 +61,9 @@ var debugRespawnPosition = [0, 0] # Used to quick respawn during testing
 onready var animatedSprite = $AnimatedSprite
 onready var deathScreen = $"../Camera2D/deathScreen"
 onready var collisionShape = $CollisionShape2D  # Reference to CollisionShape2D node
+onready var gate1 = $"../objectAbovePlayer/Image-removebg-preview"
+onready var gate2 = $"../objectAbovePlayer/Image-removebg-preview4"
+onready var fade_rect = $"../Camera2D/fadeRect"
 
 func _ready():
 	isDead = false
@@ -223,8 +228,63 @@ func state_in_wind(delta):
 		playerVelocity.x = lerp(playerVelocity.x, 0, 0.1)
 
 
-func state_gameOver():
-	pass
+# Declare variables to track elapsed time for delay
+
+func state_gameOver(delta):
+	playerVelocity.x = 0
+	
+	# Makes sure there is some gravity
+	playerVelocity.y = 100
+
+	var gate2targetPosX = 182
+	var gate2targetScaleX = 0.376
+	var gate1targetPosX = -252.25
+	var gate1targetScaleX = 0.376
+	
+	var gameoverAnimationSpeed = 2
+	
+	# Update the time elapsed
+	GameoverTimer += delta
+
+	# Gate animations (play immediately)
+	if GameoverTimer >= 0:
+		# Move gate1 towards target position
+		var gate1_pos = gate1.position
+		gate1_pos.x = lerp(gate1_pos.x, gate1targetPosX, gameoverAnimationSpeed * delta)
+		gate1.position = gate1_pos
+
+		# Scale gate1 towards target scale
+		var gate1_scale = gate1.scale
+		gate1_scale.x = lerp(gate1_scale.x, gate1targetScaleX, gameoverAnimationSpeed * delta)
+		gate1.scale = gate1_scale
+
+		# Move gate2 towards target position
+		var gate2_pos = gate2.position
+		gate2_pos.x = lerp(gate2_pos.x, gate2targetPosX, gameoverAnimationSpeed * delta)
+		gate2.position = gate2_pos
+
+		# Scale gate2 towards target scale
+		var gate2_scale = gate2.scale
+		gate2_scale.x = lerp(gate2_scale.x, gate2targetScaleX, gameoverAnimationSpeed * delta)
+		gate2.scale = gate2_scale
+
+	# Delay before starting the player scaling animation
+	if GameoverTimer >= animation_delay:
+		# Scale player to (1.2, 1.2) with linear interpolation
+		var player_scale = scale
+		player_scale.x = lerp(player_scale.x, 1.2, gameoverAnimationSpeed * delta)
+		player_scale.y = lerp(player_scale.y, 1.2, gameoverAnimationSpeed * delta)
+		scale = player_scale
+
+	# Fade the screen to white with delay
+	if GameoverTimer >= animation_delay:
+		var fade_color = fade_rect.modulate
+		fade_color.a = lerp(fade_color.a, 1.0, gameoverAnimationSpeed * delta)  # Fade to fully opaque
+		fade_rect.modulate = fade_color
+
+
+	
+	
 
 
 func handle_death():
@@ -355,6 +415,8 @@ func update_animation():
 		anim = "fall"
 	elif playerVelocity.x != 0 and (state == State.WALKING or state == State.INAIR):
 		anim = "run"
+	elif state == State.GAMEOVER:
+		anim = "gameOver"
 	
 	if animatedSprite.animation != anim:
 		animatedSprite.stop()
