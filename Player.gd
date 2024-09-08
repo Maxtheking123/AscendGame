@@ -18,7 +18,7 @@ var wallJumpForce = 600
 var maxJumpHoldTime = 0.4  # Maximum time the player can hold the jump button to increase jump height
 var defaultGroundFriction = 15
 var defaultWallSlideSpeed = 200
-var defaultGroundSound = "res://Assets/sounds/Step_rock.wav"
+var defaultGroundSound = preload("res://Assets/sounds/Step_rock.wav")
 var sounds = {
 	"jump": preload("res://Assets/sounds/Jump.wav"),
 	"grass": preload("res://Assets/sounds/Step_grass.wav"),
@@ -133,6 +133,7 @@ func update_state(delta):
 				state_idle(delta)
 			State.INWIND:
 				state_in_wind(delta)
+	print(state)
 
 
 func state_sinking(delta):
@@ -173,7 +174,7 @@ func state_idle(delta):
 	
 	if isJumping:
 		state = State.INAIR
-	elif playerVelocity.x != 0 and (Input.is_action_pressed("ui_left") or Input.is_action_pressed("ui_right")):
+	elif playerVelocity.x != 0 and (Input.is_action_pressed("ui_left") or Input.is_action_pressed("ui_right") and not isSlipping):
 		state = State.WALKING
 	elif onLadder:
 		state = State.CLIMBING
@@ -395,7 +396,6 @@ func handle_jump(isOnFloor: bool, isOnWall: bool, delta: float):
 					state = State.INAIR
 				else:
 					state = State.INWIND
-				print("jumped")
 				play_sound(sounds["jump"])
 			elif isOnWall and wallJumpAvailable and wallJumpTimer <= 0:
 				playerVelocity.y = -wallJumpForce
@@ -408,7 +408,6 @@ func handle_jump(isOnFloor: bool, isOnWall: bool, delta: float):
 					state = State.INAIR
 				else:
 					state = State.INWIND
-				print("jumped")
 				play_sound(sounds["jump"])
 
 	if isJumping:
@@ -519,10 +518,8 @@ func handle_fall(delta, floating = false):
 				playerVelocity.x = lerp(playerVelocity.x, windSpeed, delta * 4)
 		# Play landing sound if on the floor
 		if is_on_floor():
-			print(playerVelocity.y)
 			# Makes sure you are falling fast enough to make a sound
 			if playerVelocity.y > 600:
-				print("landed")
 				play_sound(sounds["land"])
 				
 			isOnFloor = true
@@ -537,8 +534,7 @@ func play_sound(sound):
 	audioPlayer.stream = sound
 	audioPlayer.volume_db = linear2db(soundEffectsVolume)  # Adjust volume dynamically
 	audioPlayer.play()
-	print("playing sound: ", audioPlayer.stream," soundEffectsVolume ", audioPlayer.volume_db, " audioPlayer ", audioPlayer)
-	
+
 	audioPlayer.play()
 
 
@@ -555,7 +551,9 @@ func handle_ground(delta):
 		# Rotate the velocity based on the slope's angle
 		var slope_direction = Vector2(slope_normal.y, -slope_normal.x).normalized()
 		if abs(slope_direction.angle()) > 20:
+			print(playerVelocity)
 			playerVelocity = playerVelocity.rotated(slope_direction.angle())
+			print(playerVelocity)
 
 		# Friction logic
 		var groundFriction = get_ground_friction()
