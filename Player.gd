@@ -18,6 +18,16 @@ var wallJumpForce = 600
 var maxJumpHoldTime = 0.4  # Maximum time the player can hold the jump button to increase jump height
 var defaultGroundFriction = 15
 var defaultWallSlideSpeed = 200
+var defaultGroundSound = "res://Assets/sounds/Step_rock.wav"
+var sounds = {
+	"jump": preload("res://Assets/sounds/Jump.wav"),
+	"grass": preload("res://Assets/sounds/Step_grass.wav"),
+	"rock": preload("res://Assets/sounds/Step_rock.wav"),
+	"water": preload("res://Assets/sounds/Step_water.wav"),
+	"underwater": preload("res://Assets/sounds/Swim_Submerged.wav"),
+	"land": preload("res://Assets/sounds/Landing.wav"),
+}
+var groundSoundMap = {"ice": sounds["water"], "grass": sounds["grass"], "rock": sounds["rock"]}
 var groundFrictionMap = {"ice": 2}
 var wallSlideSpeedMap = {"ice": 600}  # Dictionary to hold friction values for different wall types
 var respawnCoordinateMap = {"9": [0, 0], "8": [45, -3985], "7": [133, -7340], "6": [-140, -11900], "5": [-74, -17376], "4": [659, -21646], "3": [57, -25144], "2": [51, -29524], "1": [77, -32880]}
@@ -56,6 +66,10 @@ var canJump = true  # Used for jump state control
 var distance = 0.0 # Used to track distance to ground
 var isOnFloatingThing = false
 var debugRespawnPosition = [0, 0] # Used to quick respawn during testing
+var debug = false
+
+var soundEffectsVolume = 1.0  # Volume control variable
+var currentSound = ""  # Track the current sound being played
 
 # Nodes
 onready var animatedSprite = $AnimatedSprite
@@ -64,16 +78,20 @@ onready var collisionShape = $CollisionShape2D  # Reference to CollisionShape2D 
 onready var gate1 = $"../objectAbovePlayer/Image-removebg-preview"
 onready var gate2 = $"../objectAbovePlayer/Image-removebg-preview4"
 onready var fade_rect = $"../Camera2D/fadeRect"
+onready var audioPlayer = $AudioStreamPlayer2D
 
 func _ready():
 	isDead = false
 	wallSlideSpeedMap["default"] = defaultWallSlideSpeed
 	debugRespawnPosition = position
+	audioPlayer.volume_db = linear2db(soundEffectsVolume)  # Set initial volume
 
 func _physics_process(delta):
 	#print(position)
-	if Input.is_action_pressed("debugRespawn"):
-		position = debugRespawnPosition
+	if debug == true:
+		if Input.is_action_pressed("debugRespawn"):
+			position = debugRespawnPosition
+			
 	if (position.x > 880) or (position.x < -950):
 		_kill_player_other()
 	if isOnFloatingThing:
@@ -294,32 +312,51 @@ func handle_death():
 
 
 
+
 func handle_horizontal_movement(isOnFloor: bool, delta: float):
 	if isDead:
 		return
 
-	if Input.is_action_pressed("ui_left"):
+	if Input.is_action_pressed("ui_left") or Input.is_action_pressed("ui_right"):
 		if not isSlipping and not onLadder or (isSlipping and isInAir):
-			playerVelocity.x = -runSpeed
+			playerVelocity.x = -runSpeed if Input.is_action_pressed("ui_left") else runSpeed
 		elif onLadder:
-			playerVelocity.x = (-runSpeed) / 3
-		animatedSprite.flip_h = true
-	elif Input.is_action_pressed("ui_right"):
-		if not isSlipping and not onLadder or (isSlipping and isInAir):
-			playerVelocity.x = runSpeed
-		elif onLadder:
-			playerVelocity.x = runSpeed/3
-		animatedSprite.flip_h = false
+			playerVelocity.x = (-runSpeed / 3) if Input.is_action_pressed("ui_left") else (runSpeed / 3)
+
+		animatedSprite.flip_h = Input.is_action_pressed("ui_left")
+
+		# Play sound if it's not already playing
+		if not audioPlayer.playing and is_on_floor():
+			var sound = get_ground_sound()  # Get the sound path
+			audioPlayer.stream = sound
+			audioPlayer.volume_db = linear2db(soundEffectsVolume)  # Adjust volume dynamically
+			audioPlayer.play()
+			currentSound = "walking"  # Track the current sound
+
 	elif isOnFloor:
 		var friction = get_ground_friction()
 		playerVelocity.x = lerp(playerVelocity.x, 0, friction * delta)
+
+		# Stop the walking sound if player is stopping
+		if currentSound == "walking" and audioPlayer.playing:
+			audioPlayer.stop()
+			currentSound = ""  # Reset current sound
+
 	elif state == State.INWIND:
-		playerVelocity.x = playerVelocity.x
+		playerVelocity.x = playerVelocity.x  # No sound changes in wind state
 	else:
 		playerVelocity.x = 0
 
-func handle_jump(isOnFloor: bool, isOnWall: bool, delta: float):
+		# Stop the walking sound if player is not moving
+		if currentSound == "walking" and audioPlayer.playing:
+			audioPlayer.stop()
+			currentSound = ""  # Reset current sound
 
+
+
+
+
+func handle_jump(isOnFloor: bool, isOnWall: bool, delta: float):
 	if isDead:
 		return
 
@@ -329,6 +366,7 @@ func handle_jump(isOnFloor: bool, isOnWall: bool, delta: float):
 			playerVelocity.y = -ladderClimbSpeed
 			isClimbing = true
 			update_ladder_animation()
+
 		elif Input.is_action_pressed("ui_down"):
 			playerVelocity.y = ladderClimbSpeed
 			isClimbing = true
@@ -347,10 +385,7 @@ func handle_jump(isOnFloor: bool, isOnWall: bool, delta: float):
 	if not isSlipping and not isJumping and not isInWater:
 		gravity = defaultGravity
 
-		# Execute jump
 		if Input.is_action_just_pressed("ui_up"):
-			isOnWall = is_on_wall()
-			# print("canJump ",canJump," isOnWall ",isOnWall," wallJumpAvailable ",wallJumpAvailable," wallJumpTimer ",wallJumpTimer)
 			if canJump and not isOnWall:
 				canJump = false
 				isJumping = true
@@ -360,6 +395,8 @@ func handle_jump(isOnFloor: bool, isOnWall: bool, delta: float):
 					state = State.INAIR
 				else:
 					state = State.INWIND
+				print("jumped")
+				play_sound(sounds["jump"])
 			elif isOnWall and wallJumpAvailable and wallJumpTimer <= 0:
 				playerVelocity.y = -wallJumpForce
 				playerVelocity.x = (runSpeed * (1 if not animatedSprite.flip_h else -1)) * 1.5
@@ -371,15 +408,13 @@ func handle_jump(isOnFloor: bool, isOnWall: bool, delta: float):
 					state = State.INAIR
 				else:
 					state = State.INWIND
+				print("jumped")
+				play_sound(sounds["jump"])
 
 	if isJumping:
 		if Input.is_action_pressed("ui_up") and jumpHoldTimer < maxJumpHoldTime:
 			jumpHoldTimer += delta
 			gravity = minGravity
-			if not isInWind:
-				state = State.INAIR
-			else:
-				state = State.INWIND
 		else:
 			isJumping = false
 			gravity = defaultGravity
@@ -456,6 +491,14 @@ func get_ground_friction() -> float:
 			return groundFrictionMap.get(collider.get_meta("floor_type"), defaultGroundFriction)
 	return defaultGroundFriction
 
+func get_ground_sound():
+	var collision = get_slide_collision(0)
+	if collision:
+		var collider = collision.collider
+		if collider.has_meta("floor_type"):
+			return groundSoundMap.get(collider.get_meta("floor_type"), defaultGroundSound)
+	return defaultGroundSound
+
 func handle_wall_slide(wallFriction, delta):
 	if not isSliding and playerVelocity.y < 0:
 		playerVelocity.y /= 5
@@ -464,31 +507,39 @@ func handle_wall_slide(wallFriction, delta):
 
 
 func handle_fall(delta, floating = false):
+	isSlipping = false
 	if not isInWater:
-		# Apply vertical gravity
 		playerVelocity.y += gravity * delta
-	
-		# Apply constant horizontal wind force if in wind state
+
 		if state == State.INWIND and not is_on_floor():
 			var windSpeed = windVelocity.x * -windDirection.x * windModifier
-			# Cap the horizontal speed to prevent continuous acceleration
 			if abs(playerVelocity.x) > abs(windSpeed):
 				playerVelocity.x = windSpeed
 			else:
-				# Use delta to apply wind force gradually
 				playerVelocity.x = lerp(playerVelocity.x, windSpeed, delta * 4)
-		elif is_on_floor():
+		# Play landing sound if on the floor
+		if is_on_floor():
+			print(playerVelocity.y)
+			# Makes sure you are falling fast enough to make a sound
+			if playerVelocity.y > 600:
+				print("landed")
+				play_sound(sounds["land"])
+				
 			isOnFloor = true
-			state = State.IDLE
 	else:
 		playerVelocity.y += (sinkSpeed / 2) * delta
-	
+
 	if not floating:
 		isSliding = false
 		canJump = false
 
-
-
+func play_sound(sound):
+	audioPlayer.stream = sound
+	audioPlayer.volume_db = linear2db(soundEffectsVolume)  # Adjust volume dynamically
+	audioPlayer.play()
+	print("playing sound: ", audioPlayer.stream," soundEffectsVolume ", audioPlayer.volume_db, " audioPlayer ", audioPlayer)
+	
+	audioPlayer.play()
 
 
 func handle_ground(delta):
@@ -499,12 +550,17 @@ func handle_ground(delta):
 			_kill_player_other()
 
 		var slope_angle = abs((acos(collision.normal.y) * 180 / PI) - 180)
-		var slope_direction = Vector2(collision.normal.y, -collision.normal.x).normalized()
+		var slope_normal = collision.normal.normalized()
 		
+		# Rotate the velocity based on the slope's angle
+		var slope_direction = Vector2(slope_normal.y, -slope_normal.x).normalized()
+		if abs(slope_direction.angle()) > 20:
+			playerVelocity = playerVelocity.rotated(slope_direction.angle())
+
+		# Friction logic
 		var groundFriction = get_ground_friction()
 		
 		if abs(slope_angle) > groundFriction * 10:
-			playerVelocity += slope_direction * (20 - groundFriction) * delta
 			if playerVelocity.y < minSlippSpeed * slope_angle * groundFriction:
 				playerVelocity.y = minSlippSpeed * slope_angle * groundFriction
 			isSlipping = true
@@ -516,6 +572,7 @@ func handle_ground(delta):
 		isSlipping = false
 	wallJumpAvailable = true
 	canJump = true
+
 
 func _on_Ladder_area_entered(area):
 	onLadder = true

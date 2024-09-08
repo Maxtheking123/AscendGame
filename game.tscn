@@ -4224,7 +4224,7 @@ scale_amount = 0.5
 script = ExtResource( 93 )
 
 [node name="Player" type="KinematicBody2D" parent="."]
-position = Vector2( -6, -13 )
+position = Vector2( -516, -24161 )
 scale = Vector2( 2, 2 )
 z_index = 10
 script = ExtResource( 11 )
@@ -4242,8 +4242,6 @@ animation = "gameOver"
 frame = 64
 playing = true
 script = ExtResource( 10 )
-
-[node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" parent="Player"]
 
 [node name="circle1" type="Node" parent="."]
 
@@ -4412,7 +4410,7 @@ script = ExtResource( 109 )
 [node name="AnimatedSprite" type="AnimatedSprite" parent="circle4/rockPushing/RockPushingPerson"]
 position = Vector2( -1.2, 0 )
 frames = SubResource( 259 )
-frame = 2
+frame = 6
 playing = true
 flip_h = true
 
@@ -4447,7 +4445,7 @@ script = ExtResource( 109 )
 [node name="AnimatedSprite" type="AnimatedSprite" parent="circle4/rockPushing2/RockPushingPerson"]
 position = Vector2( -1.2, 0 )
 frames = SubResource( 259 )
-frame = 2
+frame = 6
 playing = true
 flip_h = true
 
@@ -4482,7 +4480,7 @@ script = ExtResource( 109 )
 [node name="AnimatedSprite" type="AnimatedSprite" parent="circle4/rockPushing3/RockPushingPerson"]
 position = Vector2( -1.2, 0 )
 frames = SubResource( 259 )
-frame = 2
+frame = 6
 playing = true
 flip_h = true
 
@@ -4564,7 +4562,7 @@ script = ExtResource( 106 )
 position = Vector2( 1100, -20441 )
 scale = Vector2( 8.36938, 9.73581 )
 frames = SubResource( 220 )
-frame = 1
+frame = 4
 playing = true
 
 [node name="Area2D" type="Area2D" parent="circle5"]

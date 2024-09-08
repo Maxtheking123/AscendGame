@@ -1,4 +1,4 @@
-[gd_resource type="TileSet" load_steps=95 format=2]
+[gd_resource type="TileSet" load_steps=96 format=2]
 
 [ext_resource path="res://Assets/tilesets/Terrain Tileset.png" type="Texture" id=1]
 [ext_resource path="res://Assets/sophia-mian-lvl-3-tileset.png" type="Texture" id=2]
@@ -278,6 +278,8 @@ points = PoolVector2Array( 0, 0, 16, 0, 16, 16, 0, 16 )
 
 [sub_resource type="ConvexPolygonShape2D" id=175]
 points = PoolVector2Array( 0, 0, 32, 0, 32, 32, 0, 32 )
+
+[sub_resource type="GDScript" id=176]
 
 [resource]
 0/name = "Terrain Tileset.png 0"
@@ -2197,3 +2199,4 @@ points = PoolVector2Array( 0, 0, 32, 0, 32, 32, 0, 32 )
 "shape_transform": Transform2D( 1, 0, 0, 1, 0, 0 )
 } ]
 90/z_index = 0
+script = SubResource( 176 )
