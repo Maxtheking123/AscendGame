@@ -62,7 +62,7 @@ var canJump = true
 var distance = 0.0
 var isOnFloatingThing = false
 var debugRespawnPosition = [0, 0]
-var debug = false
+var debug = true
 
 var soundEffectsVolume = 1.0
 var currentSound = ""
@@ -83,7 +83,8 @@ func _ready():
 	wallSlideSpeedMap["default"] = defaultWallSlideSpeed
 	debugRespawnPosition = position
 	audioPlayer.volume_db = linear2db(soundEffectsVolume)
-	_load_high_score(SAVE_FILE_PATH)
+	if not debug:
+		_load_high_score(SAVE_FILE_PATH)
 	
 	autosaveTimer.wait_time = 3
 	autosaveTimer.one_shot = false 
@@ -619,12 +620,13 @@ func handle_fall(delta, floating = false):
 	isSlipping = false
 	if not isInWater:
 		playerVelocity.y += gravity * delta
-		if state == State.INWIND and not is_on_floor():
+		if (state == State.INWIND or isInWind) and not is_on_floor():
 			var windSpeed = windVelocity.x * -windDirection.x * windModifier
 			if abs(playerVelocity.x) > abs(windSpeed):
 				playerVelocity.x = windSpeed
 			else:
 				playerVelocity.x = lerp(playerVelocity.x, windSpeed, delta * 4)
+			state = State.INWIND
 		if is_on_floor():
 			if playerVelocity.y > 600:
 				play_sound(sounds["land"])
