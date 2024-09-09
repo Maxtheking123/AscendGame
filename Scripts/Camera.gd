@@ -22,5 +22,8 @@ func _process(delta):
 		# Calculates speed by making it faster if the player is further from the camera
 		var camMovementSpeed = distance / 200 * delta
 		
+		if distance > 10000:
+			position.y = player.position.y
+		
 		# Moves into the target position
 		position.y = lerp(position.y, targetPositionY, camMovementSpeed)

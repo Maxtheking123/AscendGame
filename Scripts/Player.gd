@@ -85,7 +85,7 @@ func _ready():
 	audioPlayer.volume_db = linear2db(soundEffectsVolume)
 	_load_high_score(SAVE_FILE_PATH)
 	
-	autosaveTimer.wait_time = 15
+	autosaveTimer.wait_time = 3
 	autosaveTimer.one_shot = false 
 	add_child(autosaveTimer)
 	autosaveTimer.connect("timeout", self, "_on_autosave_timeout")
@@ -96,8 +96,9 @@ func _on_autosave_timeout():
 	description: Handles the autosave timer, saving the player's progress every 15 seconds.
 	params: None
 	"""
-	_save_high_score()
-	print("Autosaved at position:", position)
+	if is_on_floor():
+		_save_high_score()
+		print("Autosaved at position:", position)
 
 func _load_high_score(file_path: String) -> void:
 	"""
@@ -117,8 +118,6 @@ func _load_high_score(file_path: String) -> void:
 			position.y = saveInfo[1]
 			state = saveInfo[2]
 			currentRespawn = saveInfo[3]			
-			
-			print("High score loaded:", saveInfo)
 	else:
 		print("No save file found at", file_path)
 		
@@ -184,7 +183,6 @@ func update_state(delta):
 				state_idle(delta)
 			State.INWIND:
 				state_in_wind(delta)
-	print(state)
 
 
 func state_sinking(delta):
@@ -278,6 +276,10 @@ func state_sliding(delta):
 			if isPushingTowardsWall and wallJumpTimer <= 0:
 				isSliding = true
 				handle_wall_slide(wallFriction, delta)
+
+				# Apply wind force while sliding
+				if state == State.INWIND:
+					playerVelocity.x += windVelocity.x * windDirection.x * windModifier * delta
 			else:
 				isSliding = false
 				if is_on_floor():
@@ -299,9 +301,9 @@ func state_in_wind(delta):
 	
 	handle_fall(delta)
 	handle_jump(false, false, delta)
-	
+
 	var windForce = windVelocity.x * windDirection.x * windModifier * 0.5
-	
+
 	if Input.is_action_pressed("ui_left"):
 		if windDirection.x < 0:
 			playerVelocity.x = 0
@@ -316,6 +318,15 @@ func state_in_wind(delta):
 		animatedSprite.flip_h = false
 	else:
 		playerVelocity.x = lerp(playerVelocity.x, 0, 0.1)
+
+	# Check if the player is moving towards the wall and touching it
+	isOnWall = is_on_wall()
+	if isOnWall:
+		var isPushingTowardsWall = (Input.is_action_pressed("ui_left") and animatedSprite.flip_h) or (Input.is_action_pressed("ui_right") and not animatedSprite.flip_h)
+
+		if isPushingTowardsWall:
+			# Transition to sliding state if pushing against the wall
+			state = State.SLIDING
 
 func state_gameOver(delta):
 	"""
@@ -604,10 +615,10 @@ func handle_fall(delta, floating = false):
 	description: Manages the player's fall, including gravity and wind interactions.
 	params: delta: time passed since last frame floating (bool): Whether the player is on a floating object.
 	"""
+	
 	isSlipping = false
 	if not isInWater:
 		playerVelocity.y += gravity * delta
-
 		if state == State.INWIND and not is_on_floor():
 			var windSpeed = windVelocity.x * -windDirection.x * windModifier
 			if abs(playerVelocity.x) > abs(windSpeed):
@@ -617,8 +628,8 @@ func handle_fall(delta, floating = false):
 		if is_on_floor():
 			if playerVelocity.y > 600:
 				play_sound(sounds["land"])
-				
 			isOnFloor = true
+			state = State.IDLE
 	else:
 		playerVelocity.y += (sinkSpeed / 2) * delta
 
@@ -654,9 +665,7 @@ func handle_ground(delta):
 		
 		var slope_direction = Vector2(slope_normal.y, -slope_normal.x).normalized()
 		if abs(slope_direction.angle()) > 20:
-			print(playerVelocity)
 			playerVelocity = playerVelocity.rotated(slope_direction.angle())
-			print(playerVelocity)
 
 		var groundFriction = get_ground_friction()
 		
