@@ -62,7 +62,7 @@ var canJump = true
 var distance = 0.0
 var isOnFloatingThing = false
 var debugRespawnPosition = [0, 0]
-var debug = true
+var debug = false
 
 var soundEffectsVolume = 1.0
 var currentSound = ""
