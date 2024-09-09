@@ -1,6 +1,5 @@
 extends KinematicBody2D
 
-# Configurable properties
 var gravity = 1000
 var minGravity = 600
 var defaultGravity = 1000
@@ -13,9 +12,9 @@ var minSlippSpeed = 3
 var groundMaxDistance = 30
 var ladderClimbSpeed = 200
 var runSpeed = 300
-var jumpForce = 500  # Maximum initial jump force
+var jumpForce = 500
 var wallJumpForce = 600
-var maxJumpHoldTime = 0.4  # Maximum time the player can hold the jump button to increase jump height
+var maxJumpHoldTime = 0.4
 var defaultGroundFriction = 15
 var defaultWallSlideSpeed = 200
 var defaultGroundSound = preload("res://Assets/sounds/Step_rock.wav")
@@ -29,16 +28,13 @@ var sounds = {
 }
 var groundSoundMap = {"ice": sounds["water"], "grass": sounds["grass"], "rock": sounds["rock"]}
 var groundFrictionMap = {"ice": 2}
-var wallSlideSpeedMap = {"ice": 600}  # Dictionary to hold friction values for different wall types
+var wallSlideSpeedMap = {"ice": 600}
 var respawnCoordinateMap = {"9": [0, 0], "8": [45, -3985], "7": [133, -7340], "6": [-140, -11900], "5": [-74, -17376], "4": [659, -21646], "3": [57, -25144], "2": [51, -29524], "1": [77, -32880]}
 var currentRespawn = "9"
 
 enum State {SINKING, INAIR, WALKING, CLIMBING, SLIDING, IDLE, INWIND, GAMEOVER}
-
-
 var state = State.IDLE
 
-# Internal state
 var playerVelocity = Vector2.ZERO
 var windDirection = Vector2.ZERO
 var isSliding = false
@@ -52,42 +48,91 @@ var isOnFloor = false
 var wallJumpAvailable = true
 var wallJumpTimer = 0.0
 var wallJumpGraceTimer = 0.0
-var wallJumpCooldown = 0.0  # Time in seconds before another wall jump can be performed
-var wallJumpGracePeriod = 0.7  # Time in seconds during which the player can't grab the wall after jumping
+var wallJumpCooldown = 0.0
+var wallJumpGracePeriod = 0.7 
 var FloatingThingExitTimer = 0.0
 var FloatingThingCooldown = 0.5
-var animation_delay = 2.5  # Delay before starting the player scaling
-var GameoverTimer = 0.0  # Track the time passed since the game over state started
+var animation_delay = 2.5
+var GameoverTimer = 0.0
 var onLadder = false
 var isClimbing = false
-var isJumping = false  # Track if the player is currently in a jump
-var jumpHoldTimer = 0.0  # Track how long the jump button has been held
-var canJump = true  # Used for jump state control
-var distance = 0.0 # Used to track distance to ground
+var isJumping = false 
+var jumpHoldTimer = 0.0
+var canJump = true
+var distance = 0.0
 var isOnFloatingThing = false
-var debugRespawnPosition = [0, 0] # Used to quick respawn during testing
+var debugRespawnPosition = [0, 0]
 var debug = false
 
-var soundEffectsVolume = 1.0  # Volume control variable
-var currentSound = ""  # Track the current sound being played
+var soundEffectsVolume = 1.0
+var currentSound = ""
 
-# Nodes
 onready var animatedSprite = $AnimatedSprite
 onready var deathScreen = $"../Camera2D/deathScreen"
-onready var collisionShape = $CollisionShape2D  # Reference to CollisionShape2D node
+onready var collisionShape = $CollisionShape2D
 onready var gate1 = $"../objectAbovePlayer/Image-removebg-preview"
 onready var gate2 = $"../objectAbovePlayer/Image-removebg-preview4"
 onready var fade_rect = $"../Camera2D/fadeRect"
 onready var audioPlayer = $AudioStreamPlayer2D
 
+onready var autosaveTimer = Timer.new()
+const SAVE_FILE_PATH = "user://AscendSaveFile.save"
+
 func _ready():
 	isDead = false
 	wallSlideSpeedMap["default"] = defaultWallSlideSpeed
 	debugRespawnPosition = position
-	audioPlayer.volume_db = linear2db(soundEffectsVolume)  # Set initial volume
+	audioPlayer.volume_db = linear2db(soundEffectsVolume)
+	_load_high_score(SAVE_FILE_PATH)
+	
+	autosaveTimer.wait_time = 15
+	autosaveTimer.one_shot = false 
+	add_child(autosaveTimer)
+	autosaveTimer.connect("timeout", self, "_on_autosave_timeout")
+	autosaveTimer.start()
+
+func _on_autosave_timeout():
+	"""
+	description: Handles the autosave timer, saving the player's progress every 15 seconds.
+	params: None
+	"""
+	_save_high_score()
+	print("Autosaved at position:", position)
+
+func _load_high_score(file_path: String) -> void:
+	"""
+	description: Loads the player's saved position and state from the save file.
+	params: file_path (String): The path to the save file.
+	"""
+	var saveFile = File.new()
+	
+	if saveFile.file_exists(file_path):
+		saveFile.open(file_path, File.READ)
+		var saveInfo = saveFile.get_var()  # Assuming the data is stored as an array
+		saveFile.close()
+		
+		# Apply the saved data
+		position.x = saveInfo[0]
+		position.y = saveInfo[1]
+		state = saveInfo[2]
+		
+		print("High score loaded:", saveInfo)
+	else:
+		print("No save file found at", file_path)
+		
+	
+func _save_high_score() -> void:
+	"""
+	description: Saves the player's current position and state to the save file.
+	params: None
+	"""
+	var saveFile = File.new
+	var saveInfo = [position.x, position.y, state]
+	saveFile.open(SAVE_FILE_PATH, File.WRITE)
+	saveFile.store_var(saveInfo)
+	saveFile.close
 
 func _physics_process(delta):
-	#print(position)
 	if debug == true:
 		if Input.is_action_pressed("debugRespawn"):
 			position = debugRespawnPosition
@@ -107,7 +152,7 @@ func _physics_process(delta):
 
 	update_state(delta)
 	move_and_slide(playerVelocity, Vector2.UP)
-	check_head_collision()  # Now this method is called
+	check_head_collision() 
 
 	update_animation()
 
@@ -115,6 +160,10 @@ func _physics_process(delta):
 	wallJumpGraceTimer = max(wallJumpGraceTimer - delta, 0)
 
 func update_state(delta):
+	"""
+	description: Updates the player's state based on the current state and game conditions.
+	params: delta: time passed since last frame
+	"""
 	if state == State.GAMEOVER:
 		state_gameOver(delta)
 	else:
@@ -137,12 +186,20 @@ func update_state(delta):
 
 
 func state_sinking(delta):
+	"""
+	description: Handles the sinking state when the player is in water.
+	params: delta: The time passed since the last frame.
+	"""
 	playerVelocity.y += gravity * delta
 	handle_jump(false, false, delta)
 	if not isInWater:
 		state = State.INAIR
 
 func state_inair(delta):
+	"""
+	description: Manages the player's state while in the air, including handling falls and wall interactions.
+	params: delta: time passed since last frame
+	"""
 	handle_fall(delta)
 	isOnWall = is_on_wall()
 	isOnFloor = is_on_floor()
@@ -150,13 +207,17 @@ func state_inair(delta):
 	handle_jump(isOnFloor, isOnWall, delta)
 	handle_horizontal_movement(isOnFloor, delta)
 	if isOnFloor:
-		state = State.IDLE  # Transition to IDLE instead of WALKING
+		state = State.IDLE 
 	elif isOnWall and (Input.is_action_pressed("ui_left") or Input.is_action_pressed("ui_right")):
 		state = State.SLIDING
 	elif onLadder:
 		state = State.CLIMBING
 
 func state_walking(delta):
+	"""
+	description: Handles player movement when walking on the ground.
+	params: delta: time passed since last frame
+	"""
 	handle_horizontal_movement(true, delta)
 	handle_jump(true, false, delta)
 	handle_ground(delta)
@@ -166,10 +227,14 @@ func state_walking(delta):
 	elif onLadder:
 		state = State.CLIMBING
 	elif playerVelocity.x == 0 and not Input.is_action_pressed("ui_left") and not Input.is_action_pressed("ui_right"):
-		state = State.IDLE  # Transition to idle if not moving
+		state = State.IDLE
 
 func state_idle(delta):
-	handle_jump(true, false, delta)  # This will now handle resetting canJump when on the floor
+	"""
+	description: Manages the idle state, including transitioning to other states like walking or jumping.
+	params: delta: time passed since last frame
+	"""
+	handle_jump(true, false, delta) 
 	handle_horizontal_movement(true, delta)
 	
 	if isJumping:
@@ -179,7 +244,7 @@ func state_idle(delta):
 	elif onLadder:
 		state = State.CLIMBING
 	elif not is_on_floor():
-		state = State.INAIR  # Ensure we handle cases where the player falls
+		state = State.INAIR 
 	elif is_on_floor():
 		canJump = true
 		wallJumpAvailable = true
@@ -187,6 +252,10 @@ func state_idle(delta):
 
 
 func state_climbing(delta):
+	"""
+	description: Handles movement while climbing ladders.
+	params: delta: time passed since last frame
+	"""
 	handle_jump(false, false, delta)
 	handle_horizontal_movement(false, delta)
 
@@ -194,6 +263,10 @@ func state_climbing(delta):
 		state = State.INAIR
 
 func state_sliding(delta):
+	"""
+	description: Manages the player’s movement while sliding down walls.
+	params: delta: time passed since last frame
+	"""
 	if wallJumpTimer <= 0:
 		var wallFriction = get_wall_friction()
 		handle_jump(false, true, delta)
@@ -217,42 +290,38 @@ func state_sliding(delta):
 				state = State.INAIR
 
 func state_in_wind(delta):
+	"""
+	description: Handles player movement and behavior while in strong wind conditions.
+	params: delta: time passed since last frame
+	"""
+	
 	handle_fall(delta)
 	handle_jump(false, false, delta)
 	
-	# Calculate wind force
 	var windForce = windVelocity.x * windDirection.x * windModifier * 0.5
 	
-	# Apply wind force with input-based control
 	if Input.is_action_pressed("ui_left"):
-		# Moving left
 		if windDirection.x < 0:
-			# Wind is blowing right
-			playerVelocity.x = 0  # Stop moving left if wind is blowing right
+			playerVelocity.x = 0
 		else:
-			# Wind is blowing left
 			playerVelocity.x = lerp(playerVelocity.x, -runSpeed, 0.1) - windForce
 		animatedSprite.flip_h = true
 	elif Input.is_action_pressed("ui_right"):
-		# Moving right
 		if windDirection.x < 0:
-			# Wind is blowing right
 			playerVelocity.x = lerp(playerVelocity.x, runSpeed, 0.1) - windForce
 		else:
-			# Wind is blowing left
-			playerVelocity.x = 0  # Stop moving right if wind is blowing left
+			playerVelocity.x = 0
 		animatedSprite.flip_h = false
 	else:
-		# No horizontal input
 		playerVelocity.x = lerp(playerVelocity.x, 0, 0.1)
 
-
-# Declare variables to track elapsed time for delay
-
 func state_gameOver(delta):
+	"""
+	description: Manages the game over state animation and timer.
+	params: delta: time passed since last frame
+	"""
 	playerVelocity.x = 0
 	
-	# Makes sure there is some gravity
 	playerVelocity.y = 100
 
 	var gate2targetPosX = 182
@@ -262,51 +331,43 @@ func state_gameOver(delta):
 	
 	var gameoverAnimationSpeed = 2
 	
-	# Update the time elapsed
 	GameoverTimer += delta
 
-	# Gate animations (play immediately)
 	if GameoverTimer >= 0:
-		# Move gate1 towards target position
 		var gate1_pos = gate1.position
 		gate1_pos.x = lerp(gate1_pos.x, gate1targetPosX, gameoverAnimationSpeed * delta)
 		gate1.position = gate1_pos
 
-		# Scale gate1 towards target scale
 		var gate1_scale = gate1.scale
 		gate1_scale.x = lerp(gate1_scale.x, gate1targetScaleX, gameoverAnimationSpeed * delta)
 		gate1.scale = gate1_scale
 
-		# Move gate2 towards target position
 		var gate2_pos = gate2.position
 		gate2_pos.x = lerp(gate2_pos.x, gate2targetPosX, gameoverAnimationSpeed * delta)
 		gate2.position = gate2_pos
 
-		# Scale gate2 towards target scale
 		var gate2_scale = gate2.scale
 		gate2_scale.x = lerp(gate2_scale.x, gate2targetScaleX, gameoverAnimationSpeed * delta)
 		gate2.scale = gate2_scale
 
-	# Delay before starting the player scaling animation
 	if GameoverTimer >= animation_delay:
-		# Scale player to (1.2, 1.2) with linear interpolation
 		var player_scale = scale
 		player_scale.x = lerp(player_scale.x, 1.2, gameoverAnimationSpeed * delta)
 		player_scale.y = lerp(player_scale.y, 1.2, gameoverAnimationSpeed * delta)
 		scale = player_scale
 
-	# Fade the screen to white with delay
 	if GameoverTimer >= animation_delay:
 		var fade_color = fade_rect.modulate
-		fade_color.a = lerp(fade_color.a, 1.0, gameoverAnimationSpeed * delta)  # Fade to fully opaque
+		fade_color.a = lerp(fade_color.a, 1.0, gameoverAnimationSpeed * delta)
 		fade_rect.modulate = fade_color
 
 
-	
-	
-
 
 func handle_death():
+	"""
+	description: Handles resetting the player’s position and state upon death.
+	params: None
+	"""
 	position = Vector2(respawnCoordinateMap[currentRespawn][0], respawnCoordinateMap[currentRespawn][1])
 	isDead = false
 	reset_variables()
@@ -315,6 +376,10 @@ func handle_death():
 
 
 func handle_horizontal_movement(isOnFloor: bool, delta: float):
+	"""
+	description: Controls horizontal movement, including player speed, friction, and sound effects.
+	params: isOnFloor (bool): Whether the player is on the ground. delta (float): The time passed since the last frame.
+	"""
 	if isDead:
 		return
 
@@ -326,38 +391,39 @@ func handle_horizontal_movement(isOnFloor: bool, delta: float):
 
 		animatedSprite.flip_h = Input.is_action_pressed("ui_left")
 
-		# Play sound if it's not already playing
 		if not audioPlayer.playing and is_on_floor():
-			var sound = get_ground_sound()  # Get the sound path
+			var sound = get_ground_sound() 
 			audioPlayer.stream = sound
-			audioPlayer.volume_db = linear2db(soundEffectsVolume)  # Adjust volume dynamically
+			audioPlayer.volume_db = linear2db(soundEffectsVolume)
 			audioPlayer.play()
-			currentSound = "walking"  # Track the current sound
+			currentSound = "walking" 
 
 	elif isOnFloor:
 		var friction = get_ground_friction()
 		playerVelocity.x = lerp(playerVelocity.x, 0, friction * delta)
 
-		# Stop the walking sound if player is stopping
 		if currentSound == "walking" and audioPlayer.playing:
 			audioPlayer.stop()
-			currentSound = ""  # Reset current sound
+			currentSound = "" 
 
 	elif state == State.INWIND:
-		playerVelocity.x = playerVelocity.x  # No sound changes in wind state
+		playerVelocity.x = playerVelocity.x 
 	else:
 		playerVelocity.x = 0
 
-		# Stop the walking sound if player is not moving
 		if currentSound == "walking" and audioPlayer.playing:
 			audioPlayer.stop()
-			currentSound = ""  # Reset current sound
+			currentSound = "" 
 
 
 
 
 
 func handle_jump(isOnFloor: bool, isOnWall: bool, delta: float):
+	"""
+	description: Handles player jumping, including jump force, wall jumps, and state transitions.
+	params: isOnFloor (bool): Whether the player is on the ground. isOnWall (bool): Whether the player is on a wall. delta (float): The time passed since the last frame.
+	"""
 	if isDead:
 		return
 
@@ -424,15 +490,21 @@ func handle_jump(isOnFloor: bool, isOnWall: bool, delta: float):
 
 
 
-# Add the missing method here
 func check_head_collision():
-	# Check for head collisions
+	"""
+	description: Checks if the player is colliding with something above and resets vertical velocity if so.
+	params: None
+	"""
 	for i in range(get_slide_count()):
 		var collision = get_slide_collision(i)
-		if collision.normal.y > 0:  # Check if the collision is from above
-			playerVelocity.y = 0  # Reset vertical velocity
+		if collision.normal.y > 0:  
+			playerVelocity.y = 0 
 
 func update_animation():
+	"""
+	description: Updates the player's animation based on the current state and velocity.
+	params: None
+	"""
 	if isDead:
 		return
 
@@ -458,6 +530,10 @@ func update_animation():
 
 
 func reset_variables():
+	"""
+	description: Resets player variables to default, often used after respawning or when resetting the game state.
+	params: None
+	"""
 	playerVelocity = Vector2.ZERO
 	isSliding = false
 	isSlipping = false
@@ -475,6 +551,10 @@ func reset_variables():
 	animatedSprite.flip_h = false
 
 func get_wall_friction() -> float:
+	"""
+	description: Retrieves the friction value for the current wall the player is in contact with.
+	return: float: The friction value for the wall.
+	"""
 	var collision = get_slide_collision(0)
 	if collision:
 		var collider = collision.collider
@@ -483,6 +563,10 @@ func get_wall_friction() -> float:
 	return defaultWallSlideSpeed
 
 func get_ground_friction() -> float:
+	"""
+	description: Retrieves the friction value for the current ground surface.
+	return: float: The friction value for the ground.
+	"""
 	var collision = get_slide_collision(0)
 	if collision:
 		var collider = collision.collider
@@ -491,6 +575,10 @@ func get_ground_friction() -> float:
 	return defaultGroundFriction
 
 func get_ground_sound():
+	"""
+	description: Retrieves the appropriate sound for the current ground surface.
+	return: Sound: The sound to be played when moving on the ground.
+	"""
 	var collision = get_slide_collision(0)
 	if collision:
 		var collider = collision.collider
@@ -499,6 +587,10 @@ func get_ground_sound():
 	return defaultGroundSound
 
 func handle_wall_slide(wallFriction, delta):
+	"""
+	description: Handles player sliding down walls, adjusting velocity based on friction.
+	params: wallFriction (float): The friction of the wall. delta (float): The time passed since the last frame.
+	"""
 	if not isSliding and playerVelocity.y < 0:
 		playerVelocity.y /= 5
 	isSliding = true
@@ -506,6 +598,10 @@ func handle_wall_slide(wallFriction, delta):
 
 
 func handle_fall(delta, floating = false):
+	"""
+	description: Manages the player's fall, including gravity and wind interactions.
+	params: delta: time passed since last frame floating (bool): Whether the player is on a floating object.
+	"""
 	isSlipping = false
 	if not isInWater:
 		playerVelocity.y += gravity * delta
@@ -516,9 +612,7 @@ func handle_fall(delta, floating = false):
 				playerVelocity.x = windSpeed
 			else:
 				playerVelocity.x = lerp(playerVelocity.x, windSpeed, delta * 4)
-		# Play landing sound if on the floor
 		if is_on_floor():
-			# Makes sure you are falling fast enough to make a sound
 			if playerVelocity.y > 600:
 				play_sound(sounds["land"])
 				
@@ -531,14 +625,22 @@ func handle_fall(delta, floating = false):
 		canJump = false
 
 func play_sound(sound):
+	"""
+	description: Plays a sound effect.
+	params: sound (AudioStream): The sound to be played.
+	"""
 	audioPlayer.stream = sound
-	audioPlayer.volume_db = linear2db(soundEffectsVolume)  # Adjust volume dynamically
+	audioPlayer.volume_db = linear2db(soundEffectsVolume) 
 	audioPlayer.play()
 
 	audioPlayer.play()
 
 
 func handle_ground(delta):
+	"""
+	description: Handles player-ground interactions, including slipping and friction on slopes.
+	params: delta: time passed since last frame
+	"""
 	var collision = get_slide_collision(0)
 	if collision and collision.normal.y < 1:
 		isSliding = false
@@ -548,14 +650,12 @@ func handle_ground(delta):
 		var slope_angle = abs((acos(collision.normal.y) * 180 / PI) - 180)
 		var slope_normal = collision.normal.normalized()
 		
-		# Rotate the velocity based on the slope's angle
 		var slope_direction = Vector2(slope_normal.y, -slope_normal.x).normalized()
 		if abs(slope_direction.angle()) > 20:
 			print(playerVelocity)
 			playerVelocity = playerVelocity.rotated(slope_direction.angle())
 			print(playerVelocity)
 
-		# Friction logic
 		var groundFriction = get_ground_friction()
 		
 		if abs(slope_angle) > groundFriction * 10:
@@ -573,14 +673,26 @@ func handle_ground(delta):
 
 
 func _on_Ladder_area_entered(area):
+	"""
+	description: Triggered when the player enters a ladder area, enabling climbing.
+	params: area (Area2D): The ladder area the player has entered.
+	"""
 	onLadder = true
 	isClimbing = true
 	reset_jump_state()
 
 func _on_Ladder_area_exited(area):
+	"""
+	description: Triggered when the player exits a ladder area, disabling climbing.
+	params: area (Area2D): The ladder area the player has exited.
+	"""
 	onLadder = false
 
 func reset_jump_state():
+	"""
+	description: Resets jump-related variables, such as timers and velocity, when needed.
+	params: None
+	"""
 	isJumping = false
 	canJump = true
 	jumpHoldTimer = 0.0
@@ -592,6 +704,10 @@ func reset_jump_state():
 	update_ladder_animation()
 
 func update_ladder_animation():
+	"""
+	description: Updates the climbing animation when the player is on a ladder.
+	params: None
+	"""
 	if playerVelocity.y < 0:
 		if not animatedSprite.is_playing():
 			animatedSprite.play("climb")
@@ -602,39 +718,71 @@ func update_ladder_animation():
 		animatedSprite.stop()
 
 func _on_Respawn_body_entered(body, sender):
+	"""
+	description: Triggered when the player enters a respawn area, updating the current respawn point.
+	params: body: The node that touched the Area2D sender (String): The respawn point identifier.
+	"""
 	if body.name == "Player":
 		if int(sender) < int(currentRespawn):
 			currentRespawn = sender
 
 func _kill_player_from_touching(body):
+	"""
+	description: Kills the player when certain objects are touched, triggering a respawn.
+	params: body: The node that touched the Area2D
+	"""
 	if body.name == "Player":
 		isDead = true
 		handle_death()
 
 func _kill_player_other():
+	"""
+	description: Kills the player for other reasons, such as falling off the map, and triggers a respawn.
+	params: None
+	"""
 	isDead = true
 	handle_death()
 
 func _on_floating_thing_entered(body):
+	"""
+	description: Triggered when the player enters a floating object's area, enabling floating mechanics.
+	params: body: The node that touched the Area2D
+	"""
 	if body.name == "Player":
 		isOnFloatingThing = true
 		FloatingThingExitTimer = 0.0
 
 func _on_floating_thing_exited(body):
+	"""
+	description: Triggered when the player exits a floating object's area, disabling floating mechanics.
+	params: body: The node that touched the Area2D
+	"""
 	if body.name == "Player":
 		FloatingThingExitTimer = FloatingThingCooldown
 
 func _water_exited(body):
+	"""
+	description: Triggered when the player exits water, updating water-related states.
+	params: body: The node that touched the Area2D
+	"""
 	if body.name == "Player":
 		isInWater = false
 
 func _water_entered(body):
+	"""
+	description: Triggered when the player enters water, updating water-related states and behavior.
+	params: body: The node that touched the Area2D
+	"""
 	if body.name == "Player":
 		isInWater = true
 		playerVelocity.y = sinkSpeed
 
 
 func _on_wind_entered(body, wind_dir: Vector2, wind_velocity: Vector2):
+	"""
+	description: Triggered when the player enters a wind area, applying wind effects to the player.
+	params: body: The node that touched the Area2D wind_dir (Vector2): The direction of the wind. wind_velocity (Vector2): The velocity of the wind.
+	"""
 	if body.name == "Player":
 		windDirection = wind_dir
 		windVelocity = wind_velocity
@@ -642,6 +790,10 @@ func _on_wind_entered(body, wind_dir: Vector2, wind_velocity: Vector2):
 		isInWind = true
 
 func _on_wind_exited(body):
+	"""
+	description: Triggered when the player exits a wind area, removing wind effects.
+	params: body: The node that touched the Area2D
+	"""
 	if body.name == "Player":
 		windDirection = Vector2.ZERO
 		windVelocity = 0
@@ -650,5 +802,9 @@ func _on_wind_exited(body):
 
 
 func handle_gameOver(body):
+	"""
+	description: Triggered when the game ends, transitioning the player to the game over state.
+	params: body: The node that touched the Area2D
+	"""
 	if body.name == "Player":
 		state = State.GAMEOVER
