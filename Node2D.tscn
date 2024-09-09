@@ -4561,7 +4561,7 @@ script = ExtResource( 106 )
 position = Vector2( 1100, -20441 )
 scale = Vector2( 8.36938, 9.73581 )
 frames = SubResource( 220 )
-frame = 4
+frame = 2
 playing = true
 
 [node name="Area2D" type="Area2D" parent="circle5"]
@@ -5022,7 +5022,7 @@ script = ExtResource( 101 )
 [node name="AnimatedSprite" type="AnimatedSprite" parent="circle6/Minotaur"]
 frames = SubResource( 189 )
 animation = "idle"
-frame = 1
+frame = 4
 playing = true
 
 [node name="RayCast2D" type="RayCast2D" parent="circle6/Minotaur"]

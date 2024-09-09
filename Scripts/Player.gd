@@ -130,7 +130,7 @@ func _save_high_score() -> void:
 	var saveInfo = [position.x, position.y, state]
 	saveFile.open(SAVE_FILE_PATH, File.WRITE)
 	saveFile.store_var(saveInfo)
-	saveFile.close
+	saveFile.close()
 
 func _physics_process(delta):
 	if debug == true:
