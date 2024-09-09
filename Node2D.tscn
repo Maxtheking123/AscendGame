@@ -9,8 +9,8 @@
 [ext_resource path="res://Assets/mp_character_animation_asset_pack_v1.0/Exported PNGs/Male/Character 1/Clothes 1/Character1M_1_idle_3.png" type="Texture" id=7]
 [ext_resource path="res://Assets/mp_character_animation_asset_pack_v1.0/Exported PNGs/Male/Character 1/Clothes 1/Character1M_1_idle_2.png" type="Texture" id=8]
 [ext_resource path="res://Assets/mp_character_animation_asset_pack_v1.0/Exported PNGs/Male/Character 1/Clothes 1/Character1M_1_idle_7.png" type="Texture" id=9]
-[ext_resource path="res://PlayerMovement.gd" type="Script" id=10]
-[ext_resource path="res://Player.gd" type="Script" id=11]
+[ext_resource path="res://Scripts/PlayerMovement.gd" type="Script" id=10]
+[ext_resource path="res://Scripts/Player.gd" type="Script" id=11]
 [ext_resource path="res://Assets/mp_character_animation_asset_pack_v1.0/Exported PNGs/Male/Character 1/Clothes 1/Character1M_1_fall_1.png" type="Texture" id=12]
 [ext_resource path="res://Assets/mp_character_animation_asset_pack_v1.0/Exported PNGs/Male/Character 1/Clothes 1/Character1M_1_idle_4.png" type="Texture" id=13]
 [ext_resource path="res://Assets/mp_character_animation_asset_pack_v1.0/Exported PNGs/Male/Character 1/Clothes 1/Character1M_1_idle_1.png" type="Texture" id=14]
@@ -28,7 +28,7 @@
 [ext_resource path="res://Assets/mp_character_animation_asset_pack_v1.0/Exported PNGs/Male/Character 1/Clothes 1/Character1M_1_walk_1.png" type="Texture" id=26]
 [ext_resource path="res://Assets/mp_character_animation_asset_pack_v1.0/Exported PNGs/Male/Character 1/Clothes 1/Character1M_1_walk_2.png" type="Texture" id=27]
 [ext_resource path="res://Assets/mp_character_animation_asset_pack_v1.0/Exported PNGs/Male/Character 1/Clothes 1/Character1M_1_run_4.png" type="Texture" id=28]
-[ext_resource path="res://Camera.gd" type="Script" id=29]
+[ext_resource path="res://Scripts/Camera.gd" type="Script" id=29]
 [ext_resource path="res://Assets/mp_character_animation_asset_pack_v1.0/Exported PNGs/Male/Character 1/Clothes 1/Character1M_1_land_0.png" type="Texture" id=30]
 [ext_resource path="res://Assets/mp_character_animation_asset_pack_v1.0/Exported PNGs/Male/Character 1/Clothes 1/Character1M_1_run_1.png" type="Texture" id=31]
 [ext_resource path="res://Assets/mp_character_animation_asset_pack_v1.0/Exported PNGs/Male/Character 1/Clothes 1/Character1M_1_run_0.png" type="Texture" id=32]
@@ -39,13 +39,13 @@
 [ext_resource path="res://Assets/background/AscendCircle9Background#5.png" type="Texture" id=37]
 [ext_resource path="res://Assets/Titles/Circle8Title.png" type="Texture" id=38]
 [ext_resource path="res://BasicPlatformHitbox#1.tscn" type="PackedScene" id=39]
-[ext_resource path="res://IceMaterial.gd" type="Script" id=40]
+[ext_resource path="res://Scripts/IceMaterial.gd" type="Script" id=40]
 [ext_resource path="res://Assets/background/examining-attic-ladders-220x220.png" type="Texture" id=41]
 [ext_resource path="res://PassthroughIceBlock.tscn" type="PackedScene" id=42]
 [ext_resource path="res://Assets/Frame 1.png" type="Texture" id=43]
 [ext_resource path="res://Assets/icePlatform.png" type="Texture" id=44]
 [ext_resource path="res://Assets/mp_character_animation_asset_pack_v1.0/Exported PNGs/Male/Character 1/Clothes 1/Character1M_1_slide_1.png" type="Texture" id=45]
-[ext_resource path="res://Ladder.gd" type="Script" id=46]
+[ext_resource path="res://Scripts/Ladder.gd" type="Script" id=46]
 [ext_resource path="res://Assets/mp_character_animation_asset_pack_v1.0/Exported PNGs/Male/Character 1/Clothes 1/Character1M_1_climb_4.png" type="Texture" id=47]
 [ext_resource path="res://Assets/mp_character_animation_asset_pack_v1.0/Exported PNGs/Male/Character 1/Clothes 1/Character1M_1_climb_5.png" type="Texture" id=48]
 [ext_resource path="res://Assets/mp_character_animation_asset_pack_v1.0/Exported PNGs/Male/Character 1/Clothes 1/Character1M_1_climb_6.png" type="Texture" id=49]
@@ -74,7 +74,7 @@
 [ext_resource path="res://Assets/tarPeople/tar_person_0.png" type="Texture" id=80]
 [ext_resource path="res://Assets/tarPeople/tar_person_3.png" type="Texture" id=81]
 [ext_resource path="res://Assets/tarPeople/tar_person_1.png" type="Texture" id=82]
-[ext_resource path="res://TarPerson.gd" type="Script" id=83]
+[ext_resource path="res://Scripts/TarPerson.gd" type="Script" id=83]
 [ext_resource path="res://Assets/fire.png" type="Texture" id=84]
 [ext_resource path="res://Assets/mp_character_animation_asset_pack_v1.0/Exported PNGs/Female/Character 2/No Clothes/Character2F_4_death_0.png" type="Texture" id=85]
 [ext_resource path="res://Assets/mp_character_animation_asset_pack_v1.0/Exported PNGs/Male/Character 1/Clothes 2/Character1M_2_death_1.png" type="Texture" id=86]
@@ -84,7 +84,7 @@
 [ext_resource path="res://Assets/Titles/Circle7Title.png" type="Texture" id=90]
 [ext_resource path="res://Assets/deadTreePerson.png" type="Texture" id=91]
 [ext_resource path="res://Assets/blood.png" type="Texture" id=92]
-[ext_resource path="res://BloodRain.gd" type="Script" id=93]
+[ext_resource path="res://Scripts/BloodRain.gd" type="Script" id=93]
 [ext_resource path="res://Assets/tilesets/desertblood.png" type="Texture" id=94]
 [ext_resource path="res://Assets/boilingBloodPeople/tar_person_2.png" type="Texture" id=95]
 [ext_resource path="res://Assets/boilingBloodPeople/boilingBloodPerson2.png" type="Texture" id=96]
@@ -92,22 +92,22 @@
 [ext_resource path="res://Assets/Titles/Circle6Title.png" type="Texture" id=98]
 [ext_resource path="res://Assets/spikes.png" type="Texture" id=99]
 [ext_resource path="res://coffin.png" type="Texture" id=100]
-[ext_resource path="res://Minotaur.gd" type="Script" id=101]
+[ext_resource path="res://Scripts/Minotaur.gd" type="Script" id=101]
 [ext_resource path="res://Assets/tilesets/Minotaur - Sprite Sheet.png" type="Texture" id=102]
 [ext_resource path="res://Assets/tilesets/water (1).png" type="Texture" id=103]
 [ext_resource path="res://Assets/tilesets/waterFall.png" type="Texture" id=104]
 [ext_resource path="res://rowboat.tscn" type="PackedScene" id=105]
-[ext_resource path="res://rowboat.gd" type="Script" id=106]
+[ext_resource path="res://Scripts/rowboat.gd" type="Script" id=106]
 [ext_resource path="res://circle34.tres" type="TileSet" id=107]
 [ext_resource path="res://Assets/tilesets/PushingPerson.png" type="Texture" id=108]
-[ext_resource path="res://RockPushingPerson.gd" type="Script" id=109]
+[ext_resource path="res://Scripts/RockPushingPerson.gd" type="Script" id=109]
 [ext_resource path="res://Assets/BigRock.png" type="Texture" id=110]
 [ext_resource path="res://Assets/Titles/Circle4Title.png" type="Texture" id=111]
 [ext_resource path="res://Assets/Titles/circle3Title.png" type="Texture" id=112]
 [ext_resource path="res://Assets/Titles/Circle5Title.png" type="Texture" id=113]
 [ext_resource path="res://Assets/rain.png" type="Texture" id=114]
 [ext_resource path="res://Assets/tilesets/lava.tres" type="TileSet" id=115]
-[ext_resource path="res://wind.gd" type="Script" id=116]
+[ext_resource path="res://Scripts/wind.gd" type="Script" id=116]
 [ext_resource path="res://Assets/Titles/circle1Title.png" type="Texture" id=117]
 [ext_resource path="res://Assets/Titles/Circle2Title.png" type="Texture" id=118]
 [ext_resource path="res://Assets/image-removebg-preview.png" type="Texture" id=119]
@@ -115,8 +115,8 @@
 [ext_resource path="res://Assets/tilesets/bigterrainTileMap16x16.png" type="Texture" id=121]
 [ext_resource path="res://Assets/tilesets/walkingOut.png" type="Texture" id=122]
 [ext_resource path="res://Assets/Titles/Untitled-1.png" type="Texture" id=123]
-[ext_resource path="res://fadeRect.gd" type="Script" id=124]
-[ext_resource path="res://Height.gd" type="Script" id=125]
+[ext_resource path="res://Scripts/fadeRect.gd" type="Script" id=124]
+[ext_resource path="res://Scripts/Height.gd" type="Script" id=125]
 
 [sub_resource type="DynamicFontData" id=373]
 font_path = "res://Assets/vertopal.com_vgafix.ttf"
@@ -4071,7 +4071,7 @@ position = Vector2( -236, -6408.12 )
 scale = Vector2( 0.4425, 0.501248 )
 frames = SubResource( 107 )
 animation = "fire"
-frame = 3
+frame = 1
 playing = true
 
 [node name="Area2D" type="Area2D" parent="objectAbovePlayer/firePerson/smallFire/AnimatedSprite"]
@@ -4097,7 +4097,6 @@ position = Vector2( -236, -6401.62 )
 scale = Vector2( 0.4425, 0.566246 )
 frames = SubResource( 107 )
 animation = "fire"
-frame = 2
 playing = true
 
 [node name="Area2D" type="Area2D" parent="objectAbovePlayer/firePerson2/smallFire/AnimatedSprite"]
@@ -4123,7 +4122,7 @@ position = Vector2( -236, -6411.5 )
 scale = Vector2( 0.4425, 0.535001 )
 frames = SubResource( 107 )
 animation = "fire"
-frame = 3
+frame = 1
 playing = true
 
 [node name="Area2D" type="Area2D" parent="objectAbovePlayer/firePerson3/smallFire/AnimatedSprite"]
@@ -4150,7 +4149,6 @@ position = Vector2( -236, -6413 )
 scale = Vector2( 0.4425, 0.550002 )
 frames = SubResource( 107 )
 animation = "fire"
-frame = 2
 playing = true
 
 [node name="Area2D" type="Area2D" parent="objectAbovePlayer/firePerson4/smallFire/AnimatedSprite"]
@@ -4176,7 +4174,7 @@ position = Vector2( -236, -6412 )
 scale = Vector2( 0.4425, 0.540002 )
 frames = SubResource( 107 )
 animation = "fire"
-frame = 1
+frame = 3
 playing = true
 
 [node name="Area2D" type="Area2D" parent="objectAbovePlayer/firePerson5/smallFire/AnimatedSprite"]
@@ -4414,7 +4412,6 @@ script = ExtResource( 109 )
 [node name="AnimatedSprite" type="AnimatedSprite" parent="circle4/rockPushing/RockPushingPerson"]
 position = Vector2( -1.2, 0 )
 frames = SubResource( 259 )
-frame = 4
 playing = true
 flip_h = true
 
@@ -4449,7 +4446,6 @@ script = ExtResource( 109 )
 [node name="AnimatedSprite" type="AnimatedSprite" parent="circle4/rockPushing2/RockPushingPerson"]
 position = Vector2( -1.2, 0 )
 frames = SubResource( 259 )
-frame = 4
 playing = true
 flip_h = true
 
@@ -4484,7 +4480,6 @@ script = ExtResource( 109 )
 [node name="AnimatedSprite" type="AnimatedSprite" parent="circle4/rockPushing3/RockPushingPerson"]
 position = Vector2( -1.2, 0 )
 frames = SubResource( 259 )
-frame = 4
 playing = true
 flip_h = true
 
@@ -4566,7 +4561,7 @@ script = ExtResource( 106 )
 position = Vector2( 1100, -20441 )
 scale = Vector2( 8.36938, 9.73581 )
 frames = SubResource( 220 )
-frame = 1
+frame = 4
 playing = true
 
 [node name="Area2D" type="Area2D" parent="circle5"]
@@ -4781,7 +4776,7 @@ position = Vector2( -236, -6401.62 )
 scale = Vector2( 0.4425, 0.566246 )
 frames = SubResource( 107 )
 animation = "fire"
-frame = 1
+frame = 3
 playing = true
 
 [node name="smallFire5" type="Node2D" parent="circle6/BurningCoffin/biggerFire"]
@@ -4792,7 +4787,7 @@ position = Vector2( -241.625, -6394.42 )
 scale = Vector2( 0.38625, 0.494266 )
 frames = SubResource( 107 )
 animation = "fire"
-frame = 1
+frame = 3
 playing = true
 
 [node name="smallFire4" type="Node2D" parent="circle6/BurningCoffin/biggerFire"]
@@ -4803,7 +4798,7 @@ position = Vector2( -236, -6401.62 )
 scale = Vector2( 0.4425, 0.566246 )
 frames = SubResource( 107 )
 animation = "fire"
-frame = 1
+frame = 3
 playing = true
 
 [node name="smallFire3" type="Node2D" parent="circle6/BurningCoffin/biggerFire"]
@@ -4814,7 +4809,7 @@ position = Vector2( -236, -6401.62 )
 scale = Vector2( 0.4425, 0.566246 )
 frames = SubResource( 107 )
 animation = "fire"
-frame = 1
+frame = 3
 playing = true
 
 [node name="Coffin" type="Sprite" parent="circle6/BurningCoffin"]
@@ -4840,7 +4835,7 @@ position = Vector2( -236, -6401.62 )
 scale = Vector2( 0.4425, 0.566246 )
 frames = SubResource( 107 )
 animation = "fire"
-frame = 1
+frame = 3
 playing = true
 
 [node name="smallFire5" type="Node2D" parent="circle6/BurningCoffin2/biggerFire"]
@@ -4851,7 +4846,7 @@ position = Vector2( -241.625, -6394.42 )
 scale = Vector2( 0.38625, 0.494266 )
 frames = SubResource( 107 )
 animation = "fire"
-frame = 1
+frame = 3
 playing = true
 
 [node name="smallFire4" type="Node2D" parent="circle6/BurningCoffin2/biggerFire"]
@@ -4862,6 +4857,7 @@ position = Vector2( -236, -6401.62 )
 scale = Vector2( 0.4425, 0.566246 )
 frames = SubResource( 107 )
 animation = "fire"
+frame = 2
 playing = true
 
 [node name="smallFire3" type="Node2D" parent="circle6/BurningCoffin2/biggerFire"]
@@ -4872,7 +4868,7 @@ position = Vector2( -236, -6401.62 )
 scale = Vector2( 0.4425, 0.566246 )
 frames = SubResource( 107 )
 animation = "fire"
-frame = 1
+frame = 3
 playing = true
 
 [node name="Coffin" type="Sprite" parent="circle6/BurningCoffin2"]
@@ -4898,6 +4894,7 @@ position = Vector2( -236, -6401.62 )
 scale = Vector2( 0.4425, 0.566246 )
 frames = SubResource( 107 )
 animation = "fire"
+frame = 2
 playing = true
 
 [node name="smallFire5" type="Node2D" parent="circle6/BurningCoffin3/biggerFire"]
@@ -4908,6 +4905,7 @@ position = Vector2( -241.625, -6394.42 )
 scale = Vector2( 0.38625, 0.494266 )
 frames = SubResource( 107 )
 animation = "fire"
+frame = 2
 playing = true
 
 [node name="smallFire4" type="Node2D" parent="circle6/BurningCoffin3/biggerFire"]
@@ -4918,7 +4916,7 @@ position = Vector2( -236, -6401.62 )
 scale = Vector2( 0.4425, 0.566246 )
 frames = SubResource( 107 )
 animation = "fire"
-frame = 3
+frame = 1
 playing = true
 
 [node name="smallFire3" type="Node2D" parent="circle6/BurningCoffin3/biggerFire"]
@@ -4929,6 +4927,7 @@ position = Vector2( -236, -6401.62 )
 scale = Vector2( 0.4425, 0.566246 )
 frames = SubResource( 107 )
 animation = "fire"
+frame = 2
 playing = true
 
 [node name="Coffin" type="Sprite" parent="circle6/BurningCoffin3"]
@@ -4954,7 +4953,7 @@ position = Vector2( -236, -6401.62 )
 scale = Vector2( 0.4425, 0.566246 )
 frames = SubResource( 107 )
 animation = "fire"
-frame = 1
+frame = 3
 playing = true
 
 [node name="smallFire5" type="Node2D" parent="circle6/BurningCoffin4/biggerFire"]
@@ -4965,7 +4964,7 @@ position = Vector2( -241.625, -6394.42 )
 scale = Vector2( 0.38625, 0.494266 )
 frames = SubResource( 107 )
 animation = "fire"
-frame = 1
+frame = 3
 playing = true
 
 [node name="smallFire4" type="Node2D" parent="circle6/BurningCoffin4/biggerFire"]
@@ -4976,6 +4975,7 @@ position = Vector2( -236, -6401.62 )
 scale = Vector2( 0.4425, 0.566246 )
 frames = SubResource( 107 )
 animation = "fire"
+frame = 2
 playing = true
 
 [node name="smallFire3" type="Node2D" parent="circle6/BurningCoffin4/biggerFire"]
@@ -4986,7 +4986,7 @@ position = Vector2( -236, -6401.62 )
 scale = Vector2( 0.4425, 0.566246 )
 frames = SubResource( 107 )
 animation = "fire"
-frame = 1
+frame = 3
 playing = true
 
 [node name="Coffin" type="Sprite" parent="circle6/BurningCoffin4"]
@@ -5022,6 +5022,7 @@ script = ExtResource( 101 )
 [node name="AnimatedSprite" type="AnimatedSprite" parent="circle6/Minotaur"]
 frames = SubResource( 189 )
 animation = "idle"
+frame = 1
 playing = true
 
 [node name="RayCast2D" type="RayCast2D" parent="circle6/Minotaur"]

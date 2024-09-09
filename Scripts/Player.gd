@@ -126,7 +126,7 @@ func _save_high_score() -> void:
 	description: Saves the player's current position and state to the save file.
 	params: None
 	"""
-	var saveFile = File.new
+	var saveFile = File.new()
 	var saveInfo = [position.x, position.y, state]
 	saveFile.open(SAVE_FILE_PATH, File.WRITE)
 	saveFile.store_var(saveInfo)
