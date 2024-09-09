@@ -4071,6 +4071,7 @@ position = Vector2( -236, -6408.12 )
 scale = Vector2( 0.4425, 0.501248 )
 frames = SubResource( 107 )
 animation = "fire"
+frame = 3
 playing = true
 
 [node name="Area2D" type="Area2D" parent="objectAbovePlayer/firePerson/smallFire/AnimatedSprite"]
@@ -4096,7 +4097,7 @@ position = Vector2( -236, -6401.62 )
 scale = Vector2( 0.4425, 0.566246 )
 frames = SubResource( 107 )
 animation = "fire"
-frame = 3
+frame = 2
 playing = true
 
 [node name="Area2D" type="Area2D" parent="objectAbovePlayer/firePerson2/smallFire/AnimatedSprite"]
@@ -4122,6 +4123,7 @@ position = Vector2( -236, -6411.5 )
 scale = Vector2( 0.4425, 0.535001 )
 frames = SubResource( 107 )
 animation = "fire"
+frame = 3
 playing = true
 
 [node name="Area2D" type="Area2D" parent="objectAbovePlayer/firePerson3/smallFire/AnimatedSprite"]
@@ -4148,7 +4150,7 @@ position = Vector2( -236, -6413 )
 scale = Vector2( 0.4425, 0.550002 )
 frames = SubResource( 107 )
 animation = "fire"
-frame = 3
+frame = 2
 playing = true
 
 [node name="Area2D" type="Area2D" parent="objectAbovePlayer/firePerson4/smallFire/AnimatedSprite"]
@@ -4174,7 +4176,7 @@ position = Vector2( -236, -6412 )
 scale = Vector2( 0.4425, 0.540002 )
 frames = SubResource( 107 )
 animation = "fire"
-frame = 2
+frame = 1
 playing = true
 
 [node name="Area2D" type="Area2D" parent="objectAbovePlayer/firePerson5/smallFire/AnimatedSprite"]
@@ -4412,7 +4414,7 @@ script = ExtResource( 109 )
 [node name="AnimatedSprite" type="AnimatedSprite" parent="circle4/rockPushing/RockPushingPerson"]
 position = Vector2( -1.2, 0 )
 frames = SubResource( 259 )
-frame = 7
+frame = 2
 playing = true
 flip_h = true
 
@@ -4447,7 +4449,7 @@ script = ExtResource( 109 )
 [node name="AnimatedSprite" type="AnimatedSprite" parent="circle4/rockPushing2/RockPushingPerson"]
 position = Vector2( -1.2, 0 )
 frames = SubResource( 259 )
-frame = 7
+frame = 2
 playing = true
 flip_h = true
 
@@ -4482,7 +4484,7 @@ script = ExtResource( 109 )
 [node name="AnimatedSprite" type="AnimatedSprite" parent="circle4/rockPushing3/RockPushingPerson"]
 position = Vector2( -1.2, 0 )
 frames = SubResource( 259 )
-frame = 7
+frame = 2
 playing = true
 flip_h = true
 
@@ -4564,7 +4566,7 @@ script = ExtResource( 106 )
 position = Vector2( 1100, -20441 )
 scale = Vector2( 8.36938, 9.73581 )
 frames = SubResource( 220 )
-frame = 4
+frame = 3
 playing = true
 
 [node name="Area2D" type="Area2D" parent="circle5"]
@@ -4779,7 +4781,7 @@ position = Vector2( -236, -6401.62 )
 scale = Vector2( 0.4425, 0.566246 )
 frames = SubResource( 107 )
 animation = "fire"
-frame = 2
+frame = 1
 playing = true
 
 [node name="smallFire5" type="Node2D" parent="circle6/BurningCoffin/biggerFire"]
@@ -4790,7 +4792,7 @@ position = Vector2( -241.625, -6394.42 )
 scale = Vector2( 0.38625, 0.494266 )
 frames = SubResource( 107 )
 animation = "fire"
-frame = 2
+frame = 1
 playing = true
 
 [node name="smallFire4" type="Node2D" parent="circle6/BurningCoffin/biggerFire"]
@@ -4801,7 +4803,7 @@ position = Vector2( -236, -6401.62 )
 scale = Vector2( 0.4425, 0.566246 )
 frames = SubResource( 107 )
 animation = "fire"
-frame = 2
+frame = 1
 playing = true
 
 [node name="smallFire3" type="Node2D" parent="circle6/BurningCoffin/biggerFire"]
@@ -4812,7 +4814,7 @@ position = Vector2( -236, -6401.62 )
 scale = Vector2( 0.4425, 0.566246 )
 frames = SubResource( 107 )
 animation = "fire"
-frame = 2
+frame = 1
 playing = true
 
 [node name="Coffin" type="Sprite" parent="circle6/BurningCoffin"]
@@ -4838,7 +4840,7 @@ position = Vector2( -236, -6401.62 )
 scale = Vector2( 0.4425, 0.566246 )
 frames = SubResource( 107 )
 animation = "fire"
-frame = 2
+frame = 1
 playing = true
 
 [node name="smallFire5" type="Node2D" parent="circle6/BurningCoffin2/biggerFire"]
@@ -4849,7 +4851,7 @@ position = Vector2( -241.625, -6394.42 )
 scale = Vector2( 0.38625, 0.494266 )
 frames = SubResource( 107 )
 animation = "fire"
-frame = 2
+frame = 1
 playing = true
 
 [node name="smallFire4" type="Node2D" parent="circle6/BurningCoffin2/biggerFire"]
@@ -4860,7 +4862,6 @@ position = Vector2( -236, -6401.62 )
 scale = Vector2( 0.4425, 0.566246 )
 frames = SubResource( 107 )
 animation = "fire"
-frame = 1
 playing = true
 
 [node name="smallFire3" type="Node2D" parent="circle6/BurningCoffin2/biggerFire"]
@@ -4871,7 +4872,7 @@ position = Vector2( -236, -6401.62 )
 scale = Vector2( 0.4425, 0.566246 )
 frames = SubResource( 107 )
 animation = "fire"
-frame = 2
+frame = 1
 playing = true
 
 [node name="Coffin" type="Sprite" parent="circle6/BurningCoffin2"]
@@ -4897,7 +4898,6 @@ position = Vector2( -236, -6401.62 )
 scale = Vector2( 0.4425, 0.566246 )
 frames = SubResource( 107 )
 animation = "fire"
-frame = 1
 playing = true
 
 [node name="smallFire5" type="Node2D" parent="circle6/BurningCoffin3/biggerFire"]
@@ -4908,7 +4908,6 @@ position = Vector2( -241.625, -6394.42 )
 scale = Vector2( 0.38625, 0.494266 )
 frames = SubResource( 107 )
 animation = "fire"
-frame = 1
 playing = true
 
 [node name="smallFire4" type="Node2D" parent="circle6/BurningCoffin3/biggerFire"]
@@ -4919,6 +4918,7 @@ position = Vector2( -236, -6401.62 )
 scale = Vector2( 0.4425, 0.566246 )
 frames = SubResource( 107 )
 animation = "fire"
+frame = 3
 playing = true
 
 [node name="smallFire3" type="Node2D" parent="circle6/BurningCoffin3/biggerFire"]
@@ -4929,7 +4929,6 @@ position = Vector2( -236, -6401.62 )
 scale = Vector2( 0.4425, 0.566246 )
 frames = SubResource( 107 )
 animation = "fire"
-frame = 1
 playing = true
 
 [node name="Coffin" type="Sprite" parent="circle6/BurningCoffin3"]
@@ -4955,7 +4954,7 @@ position = Vector2( -236, -6401.62 )
 scale = Vector2( 0.4425, 0.566246 )
 frames = SubResource( 107 )
 animation = "fire"
-frame = 2
+frame = 1
 playing = true
 
 [node name="smallFire5" type="Node2D" parent="circle6/BurningCoffin4/biggerFire"]
@@ -4966,7 +4965,7 @@ position = Vector2( -241.625, -6394.42 )
 scale = Vector2( 0.38625, 0.494266 )
 frames = SubResource( 107 )
 animation = "fire"
-frame = 2
+frame = 1
 playing = true
 
 [node name="smallFire4" type="Node2D" parent="circle6/BurningCoffin4/biggerFire"]
@@ -4977,7 +4976,6 @@ position = Vector2( -236, -6401.62 )
 scale = Vector2( 0.4425, 0.566246 )
 frames = SubResource( 107 )
 animation = "fire"
-frame = 1
 playing = true
 
 [node name="smallFire3" type="Node2D" parent="circle6/BurningCoffin4/biggerFire"]
@@ -4988,7 +4986,7 @@ position = Vector2( -236, -6401.62 )
 scale = Vector2( 0.4425, 0.566246 )
 frames = SubResource( 107 )
 animation = "fire"
-frame = 2
+frame = 1
 playing = true
 
 [node name="Coffin" type="Sprite" parent="circle6/BurningCoffin4"]
@@ -5024,7 +5022,7 @@ script = ExtResource( 101 )
 [node name="AnimatedSprite" type="AnimatedSprite" parent="circle6/Minotaur"]
 frames = SubResource( 189 )
 animation = "idle"
-frame = 3
+frame = 2
 playing = true
 
 [node name="RayCast2D" type="RayCast2D" parent="circle6/Minotaur"]

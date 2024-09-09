@@ -116,6 +116,7 @@ func _load_high_score(file_path: String) -> void:
 			position.x = saveInfo[0]
 			position.y = saveInfo[1]
 			state = saveInfo[2]
+			currentRespawn = saveInfo[3]			
 			
 			print("High score loaded:", saveInfo)
 	else:
@@ -128,7 +129,7 @@ func _save_high_score() -> void:
 	params: None
 	"""
 	var saveFile = File.new()
-	var saveInfo = [position.x, position.y, state]
+	var saveInfo = [position.x, position.y, state, currentRespawn]
 	saveFile.open(SAVE_FILE_PATH, File.WRITE)
 	saveFile.store_var(saveInfo)
 	saveFile.close()
