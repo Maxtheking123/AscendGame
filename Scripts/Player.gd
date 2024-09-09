@@ -111,12 +111,13 @@ func _load_high_score(file_path: String) -> void:
 		var saveInfo = saveFile.get_var()  # Assuming the data is stored as an array
 		saveFile.close()
 		
-		# Apply the saved data
-		position.x = saveInfo[0]
-		position.y = saveInfo[1]
-		state = saveInfo[2]
-		
-		print("High score loaded:", saveInfo)
+		if saveInfo != null:
+			# Apply the saved data
+			position.x = saveInfo[0]
+			position.y = saveInfo[1]
+			state = saveInfo[2]
+			
+			print("High score loaded:", saveInfo)
 	else:
 		print("No save file found at", file_path)
 		
