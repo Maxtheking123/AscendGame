@@ -32,6 +32,11 @@ var wallSlideSpeedMap = {"ice": 600}
 var respawnCoordinateMap = {"9": [0, 0], "8": [45, -3985], "7": [133, -7340], "6": [-140, -11900], "5": [-74, -17376], "4": [659, -21646], "3": [57, -25144], "2": [51, -29524], "1": [77, -32880]}
 var currentRespawn = "9"
 
+var gate2startPosX = 313.907
+var gate2startScaleX = 1
+var gate1startPosX = 44.496
+var gate1startScaleX = 1
+
 enum State {SINKING, INAIR, WALKING, CLIMBING, SLIDING, IDLE, INWIND, GAMEOVER}
 var state = State.IDLE
 
@@ -68,7 +73,6 @@ var soundEffectsVolume = 1.0
 var currentSound = ""
 
 onready var animatedSprite = $AnimatedSprite
-onready var deathScreen = $"../Camera2D/deathScreen"
 onready var collisionShape = $CollisionShape2D
 onready var gate1 = $"../objectAbovePlayer/Image-removebg-preview"
 onready var gate2 = $"../objectAbovePlayer/Image-removebg-preview4"
@@ -82,7 +86,6 @@ func _ready():
 	isDead = false
 	wallSlideSpeedMap["default"] = defaultWallSlideSpeed
 	debugRespawnPosition = position
-	audioPlayer.volume_db = linear2db(soundEffectsVolume)
 	if not debug:
 		_load_high_score(SAVE_FILE_PATH)
 	
@@ -98,7 +101,7 @@ func _on_autosave_timeout():
 	params: None
 	"""
 	if is_on_floor():
-		_save_high_score()
+		_save_state()
 		print("Autosaved at position:", position)
 
 func _load_high_score(file_path: String) -> void:
@@ -123,7 +126,7 @@ func _load_high_score(file_path: String) -> void:
 		print("No save file found at", file_path)
 		
 	
-func _save_high_score() -> void:
+func _save_state() -> void:
 	"""
 	description: Saves the player's current position and state to the save file.
 	params: None
@@ -135,6 +138,9 @@ func _save_high_score() -> void:
 	saveFile.close()
 
 func _physics_process(delta):
+	if Input.is_action_pressed("ui_cancel"):
+		_save_state()
+		get_tree().change_scene("res://menu.tscn")
 	if debug == true:
 		if Input.is_action_pressed("debugRespawn"):
 			position = debugRespawnPosition
@@ -408,7 +414,6 @@ func handle_horizontal_movement(isOnFloor: bool, delta: float):
 		if not audioPlayer.playing and is_on_floor():
 			var sound = get_ground_sound() 
 			audioPlayer.stream = sound
-			audioPlayer.volume_db = linear2db(soundEffectsVolume)
 			audioPlayer.play()
 			currentSound = "walking" 
 
@@ -563,6 +568,26 @@ func reset_variables():
 	canJump = true
 	gravity = defaultGravity
 	animatedSprite.flip_h = false
+	
+	scale.x = 2
+	scale.y = 2
+	
+	gate1.position.x = gate1startPosX
+	gate1.scale.x = gate1startScaleX
+	gate2.position.x = gate2startPosX
+	gate2.scale.x = gate2startScaleX
+
+
+
+func restart_game():
+	currentRespawn = "9"
+	state = State.IDLE
+	handle_death()
+	var fade_color = fade_rect.modulate
+	fade_color.a = 0
+	fade_rect.modulate = fade_color
+	_save_state()
+	
 
 func get_wall_friction() -> float:
 	"""
@@ -645,7 +670,6 @@ func play_sound(sound):
 	params: sound (AudioStream): The sound to be played.
 	"""
 	audioPlayer.stream = sound
-	audioPlayer.volume_db = linear2db(soundEffectsVolume) 
 	audioPlayer.play()
 
 	audioPlayer.play()
@@ -821,3 +845,16 @@ func handle_gameOver(body):
 	"""
 	if body.name == "Player":
 		state = State.GAMEOVER
+
+
+func _on_play_again_down():
+	"""
+	description: Triggered when you press the restart button, restarting the game.
+	"""
+	restart_game()
+
+func _on_quit_down():
+	"""
+	description: Triggered when you press the quit button, quits the game.
+	"""
+	get_tree().quit()

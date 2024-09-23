@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/Circle8Title.png-f25cc20c2919d79a89f81f7466b5d06b.stex"
+path="res://.import/upTutorial.png-c2055d4165cf87a1d14705203125e05c.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/Titles/Circle8Title.png"
-dest_files=[ "res://.import/Circle8Title.png-f25cc20c2919d79a89f81f7466b5d06b.stex" ]
+source_file="res://Assets/Titles/upTutorial.png"
+dest_files=[ "res://.import/upTutorial.png-c2055d4165cf87a1d14705203125e05c.stex" ]
 
 [params]
 
